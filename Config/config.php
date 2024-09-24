@@ -1,18 +1,15 @@
 <?php
 
-/*
- * @author      Adrian Schimpf (based on Konstantin Scheumann's work)
- * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- */
+declare(strict_types=1);
 
 return [
     'name'        => 'reCAPTCHA',
     'description' => 'Enables reCAPTCHA integration.',
     'version'     => '1.0.1',
     'author'      => 'Adrian Schimpf',
-    'routes' => [],
-    'menu' => [],
-    'services' => [
+    'routes'      => [],
+    'menu'        => [],
+    'services'    => [
         'events' => [
             'mautic.recaptcha.event_listener.form_subscriber' => [
                 'class'     => \MauticPlugin\MauticRecaptchaBundle\EventListener\FormSubscriber::class,
@@ -26,7 +23,7 @@ return [
             ],
         ],
         'models' => [],
-        'others'=>[
+        'others' =>[
             'mautic.recaptcha.service.recaptcha_client' => [
                 'class'     => \MauticPlugin\MauticRecaptchaBundle\Service\RecaptchaClient::class,
                 'arguments' => [
@@ -37,25 +34,8 @@ return [
         'integrations' => [
             'mautic.integration.recaptcha' => [
                 'class'     => \MauticPlugin\MauticRecaptchaBundle\Integration\RecaptchaIntegration::class,
-                'arguments' => [
-                    'event_dispatcher',
-                    'mautic.helper.cache_storage',
-                    'doctrine.orm.entity_manager',
-                    'session',
-                    'request_stack',
-                    'router',
-                    'translator',
-                    'logger',
-                    'mautic.helper.encryption',
-                    'mautic.lead.model.lead',
-                    'mautic.lead.model.company',
-                    'mautic.helper.paths',
-                    'mautic.core.model.notification',
-                    'mautic.lead.model.field',
-                    'mautic.plugin.model.integration_entity',
-                    'mautic.lead.model.dnc',
-                ],
                 'tags'      => [
+                    'mautic.integration',
                     'mautic.basic_integration',
                 ],
             ],
