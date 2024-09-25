@@ -5,9 +5,10 @@
 {% set hashedFormName = md5(formName) %}
 {% set siteKey = field.customParameters.site_key %}
 {% set tagAction = field.customParameters.tagAction %}
+{% set locale = app.request.locale|slice(0, 2) %}
 
 {% set containerType = type|default('div-wrapper') %}
-{% set defaultInputClass = inputClass|default('input') %}
+{% set defaultInputClass = inputClass|default('input mautic-recaptcha-token') %}
 {% set containerClass = containerClass|default(containerType) %}
 
 {% set containerAttributes = htmlAttributesStringToArray(field.containerAttributes|default('')) %}
@@ -20,9 +21,6 @@
     ]),
 }) %}
 
-
-{% set action = app.request.get('objectAction') %}
-
 <div {{ _self.renderAttributes(containerAttributes) }}>
     {% if inForm is defined and true == inForm %}
         <div {{ _self.renderAttributes(containerAttributes) }}>
@@ -31,29 +29,19 @@
     {% else %}
         {% set mauticFormInputId = 'mauticform_input_' ~ formName ~ '_' ~ id %}
         
-        <script async type="text/javascript">
-            // Callback function to handle the reCAPTCHA response
-            function verifyCallback_{{ hashedFormName }}(response) {
-                document.getElementById("{{ mauticFormInputId }}").value = response; // Set the response token
-            }
-
-            // Function to execute reCAPTCHA on load
-            function onLoad{{ hashedFormName }}() {
-                grecaptcha.execute('{{ siteKey }}', {
-                    action: '{{ tagAction }}' // Action name for reCAPTCHA
-                }).then(function(token) {
-                    console.log(token); // Log the token for debugging
-                    verifyCallback_{{ hashedFormName }}(token); // Call the verifyCallback with the token
-                }).catch(function(error) {
-                    console.error('reCAPTCHA execution failed:', error); // Handle the error
-                });
-            }
+        <script src="https://www.google.com/recaptcha/enterprise.js?render={{ siteKey }}&hl={{ locale }}&badge=bottomright" async></script>
+        <script src="{{ getAssetUrl('plugins/MauticRecaptchaBundle/Assets/js/get-token.js', null, null, true) }}"></script>
+        
+        <script type="text/javascript">
+            window.addEventListener('load', function() {
+                validateFormByRecaptcha('mauticform_{{ formName }}', '{{ siteKey }}', '{{ tagAction }}');
+            });
         </script>
-        <script async src='https://www.google.com/recaptcha/api.js?trustedtypes=true&onload=onLoad{{ hashedFormName }}&render={{ siteKey }}'></script>
         
         {% set inputAttributes = htmlAttributesStringToArray(field.inputAttributes|default()) %}
         {% set inputAttributes = inputAttributes|merge({
             'id': mauticFormInputId,
+            'class': inputAttributes.class|default([])|merge([defaultInputClass]),
         }) %}
         <input type="hidden" {{ _self.renderAttributes(inputAttributes) }}>
         <span class="mauticform-errormsg" style="display: none;"></span>
