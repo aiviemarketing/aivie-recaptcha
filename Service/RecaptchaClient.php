@@ -14,7 +14,8 @@ use Psr\Log\LoggerInterface;
 
 class RecaptchaClient
 {
-    public const TAG_NAME = 'mautic-form';
+    // may only include "A-Za-z/_". Do not include user-specific information
+    private const TAG_NAME = 'mautic_form';
 
     private string $siteKey;
 
