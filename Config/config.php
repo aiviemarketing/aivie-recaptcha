@@ -2,6 +2,10 @@
 
 declare(strict_types=1);
 
+use MauticPlugin\MauticRecaptchaBundle\Integration\RecaptchaIntegration;
+use MauticPlugin\MauticRecaptchaBundle\Integration\Support\ConfigSupport;
+use MauticPlugin\MauticRecaptchaBundle\Service\RecaptchaClient;
+
 return [
     'name'        => 'reCAPTCHA',
     'description' => 'Enables reCAPTCHA integration.',
@@ -10,9 +14,9 @@ return [
     'routes'      => [],
     'menu'        => [],
     'services'    => [
-        'others' =>[
+        'others' => [
             'mautic.recaptcha.service.recaptcha_client' => [
-                'class'     => \MauticPlugin\MauticRecaptchaBundle\Service\RecaptchaClient::class,
+                'class'     => RecaptchaClient::class,
                 'arguments' => [
                     'mautic.integrations.helper',
                 ],
@@ -20,7 +24,7 @@ return [
         ],
         'integrations' => [
             'mautic.integration.recaptcha' => [
-                'class'     => \MauticPlugin\MauticRecaptchaBundle\Integration\RecaptchaIntegration::class,
+                'class'     => RecaptchaIntegration::class,
                 'tags'      => [
                     'mautic.integration',
                     'mautic.basic_integration',
@@ -28,7 +32,7 @@ return [
             ],
             // Provides the form types to use for the configuration UI
             'mautic.integration.recaptcha.configuration' => [
-                'class'     => \MauticPlugin\MauticRecaptchaBundle\Integration\Support\ConfigSupport::class,
+                'class'     => ConfigSupport::class,
                 'arguments' => [],
                 'tags'      => [
                     'mautic.config_integration',

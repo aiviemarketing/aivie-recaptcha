@@ -1,17 +1,15 @@
 <?php
 
-/*
- * @copyright   2018 Konstantin Scheumann. All rights reserved
- * @author      Konstantin Scheumann
- * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- */
+declare(strict_types=1);
 
 namespace MauticPlugin\MauticRecaptchaBundle\Tests;
 
 use Mautic\FormBundle\Entity\Field;
+use Mautic\FormBundle\Event\FormBuilderEvent;
 use Mautic\FormBundle\Event\ValidationEvent;
-use Mautic\LeadBundle\Model\LeadModel;
 use Mautic\IntegrationsBundle\Helper\IntegrationsHelper;
+use Mautic\LeadBundle\Model\LeadModel;
+use Mautic\PluginBundle\Entity\Integration;
 use MauticPlugin\MauticRecaptchaBundle\EventListener\FormSubscriber;
 use MauticPlugin\MauticRecaptchaBundle\Integration\RecaptchaIntegration;
 use MauticPlugin\MauticRecaptchaBundle\Service\RecaptchaClient;
@@ -19,9 +17,7 @@ use PHPUnit\Framework\MockObject\MockBuilder;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Mautic\FormBundle\Event\FormBuilderEvent;
-use Mautic\PluginBundle\Entity\Integration;
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class FormSubscriberTest extends TestCase
 {
@@ -69,14 +65,14 @@ class FormSubscriberTest extends TestCase
     {
         parent::setUp();
 
-        $this->integration       = $this->createMock(RecaptchaIntegration::class);
-        $this->eventDispatcher   = $this->createMock(EventDispatcherInterface::class);
+        $this->integration        = $this->createMock(RecaptchaIntegration::class);
+        $this->eventDispatcher    = $this->createMock(EventDispatcherInterface::class);
         $this->integrationsHelper = $this->createMock(IntegrationsHelper::class);
-        $this->leadModel         = $this->createMock(LeadModel::class);
-        $this->recaptchaClient   = $this->createMock(RecaptchaClient::class);
-        $this->translator        = $this->createMock(TranslatorInterface::class);
-        $this->validationEvent   = $this->createMock(ValidationEvent::class);
-        $this->formBuildEvent    = $this->createMock(FormBuilderEvent::class);
+        $this->leadModel          = $this->createMock(LeadModel::class);
+        $this->recaptchaClient    = $this->createMock(RecaptchaClient::class);
+        $this->translator         = $this->createMock(TranslatorInterface::class);
+        $this->validationEvent    = $this->createMock(ValidationEvent::class);
+        $this->formBuildEvent     = $this->createMock(FormBuilderEvent::class);
 
         $this->eventDispatcher
             ->method('addListener')
