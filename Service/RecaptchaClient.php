@@ -14,7 +14,7 @@ use Psr\Log\LoggerInterface;
 
 class RecaptchaClient
 {
-    public const TAG_NAME = 'form';
+    public const TAG_NAME = 'mautic-form';
 
     private string $siteKey;
 
