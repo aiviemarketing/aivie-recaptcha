@@ -18,7 +18,6 @@ use MauticPlugin\MauticRecaptchaBundle\Service\RecaptchaClient;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
-use function Symfony\Component\DependencyInjection\Loader\Configurator\env;
 
 class FormSubscriber implements EventSubscriberInterface
 {

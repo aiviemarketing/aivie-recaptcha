@@ -1,7 +1,8 @@
 {% set type = 'hidden' %}
 {% set required = true %}
 
-{% set hashedFormName = md5(formName|default('')|replace({'_': ''})) %}
+{% set formName = formName|default('')|replace({'_': ''}) %}
+{% set hashedFormName = md5(formName) %}
 
 {% set containerType = type|default('div-wrapper') %}
 {% set defaultInputClass = inputClass|default('input') %}
@@ -9,7 +10,7 @@
 
 {% set containerAttributes = htmlAttributesStringToArray(field.containerAttributes|default('')) %}
 {% set containerAttributes = containerAttributes|merge({
-    'id': 'mauticform' ~ formName|default('') ~ '_' ~ id,
+    'id': 'mauticform_' ~ formName ~ '_' ~ id,
     'class': containerAttributes.class|default([])|merge([
         'mauticform-row',
         'mauticform-' ~ containerClass,
@@ -17,13 +18,16 @@
     ]),
 }) %}
 
+
+{% set action = app.request.get('objectAction') %}
+
 <div {{ _self.renderAttributes(containerAttributes) }}>
     {% if inForm is defined and true == inForm %}
         <div {{ _self.renderAttributes(containerAttributes) }}>
             <label class="text-muted">{{ field.label|purify }}</label>
         </div>
     {% else %}
-        {% set mauticFormInputId = 'mauticform_input_' ~ formName|trim|default('')|e('js') ~ '_' ~ field.alias|e('js') %}
+        {% set mauticFormInputId = 'mauticform_input_' ~ formName ~ '_' ~ id %}
         
         <script async type="text/javascript">
             // Callback function to handle the reCAPTCHA response
