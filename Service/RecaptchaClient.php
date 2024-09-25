@@ -10,6 +10,7 @@ use Google\Cloud\RecaptchaEnterprise\V1\RecaptchaEnterpriseServiceClient;
 use Google\Cloud\RecaptchaEnterprise\V1\TokenProperties\InvalidReason;
 use Mautic\CoreBundle\Helper\ArrayHelper;
 use Mautic\FormBundle\Entity\Field;
+use Psr\Log\LoggerInterface;
 
 class RecaptchaClient
 {
@@ -25,7 +26,7 @@ class RecaptchaClient
     /**
      * FormSubscriber constructor.
      */
-    public function __construct()
+    public function __construct(private LoggerInterface $logger)
     {
         $this->siteKey   = getenv('GC_RECAPTCHA_SITE_KEY');
         $this->project   = getenv('GOOGLE_CLOUD_PROJECT');
@@ -47,8 +48,7 @@ class RecaptchaClient
     public function verify(string $token, Field $field): bool
     {
         if (empty($token)) {
-            // @todo use logger service
-            error_log('Recaptcha: Frontend token is empty. Should not be empty. There is something wrong with the JS frontend');
+            $this->logger->error('Recaptcha: Frontend token is empty. Should not be empty. There is something wrong with the JS frontend');
 
             return false;
         }
@@ -56,11 +56,11 @@ class RecaptchaClient
         $riskScore = $this->createAssessment($this->siteKey, $token, $this->project, $this->getTagActionName());
         $minScore  = (float) ArrayHelper::getValue('minScore', $field->getProperties());
         if ($riskScore > 0 && $minScore <= $riskScore) {
-            error_log('Recaptcha: valid - minimum score ('.$minScore.') is met: '.$riskScore);
+            $this->logger->error('Recaptcha: valid - minimum score ('.$minScore.') is met: '.$riskScore);
 
             return true;
         }
-        error_log('Recaptcha: risky - minimum score ('.$minScore.') is NOT met: '.$riskScore);
+        $this->logger->error('Recaptcha: risky - minimum score ('.$minScore.') is NOT met: '.$riskScore);
 
         return false;
     }
@@ -92,19 +92,17 @@ class RecaptchaClient
             );
 
             if (false == $response->getTokenProperties()->getValid()) {
-                $message =sprintf(
+                $this->logger->error(sprintf(
                     'Recaptcha: CreateAssessment() failed: because the token was invalid. Reason: %s',
                     InvalidReason::name($response->getTokenProperties()->getInvalidReason())
-                );
-
-                error_log($message);
+                ));
 
                 return 0;
             }
 
             $tagAction = $response->getTokenProperties()->getAction();
             if ($tagAction == $action) {
-                error_log('Recaptcha: The score is:'.$response->getRiskAnalysis()->getScore());
+                $this->logger->error('Recaptcha: The score is:'.$response->getRiskAnalysis()->getScore());
 
                 return $response->getRiskAnalysis()->getScore();
             } else {
@@ -112,9 +110,9 @@ class RecaptchaClient
             }
         } catch (\Exception $e) {
             $message = 'Recaptcha: CreateAssessment() call failed with the following error: '.$e->getMessage();
-            error_log($e);
         }
-        error_log($message);
+
+        $this->logger->error($message);
 
         return 0;
     }
