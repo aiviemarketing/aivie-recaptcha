@@ -1,0 +1,61 @@
+{% set type = 'hidden' %}
+{% set required = true %}
+
+{% set hashedFormName = md5(formName|default('')|replace({'_': ''})) %}
+
+{% set containerType = type|default('div-wrapper') %}
+{% set defaultInputClass = inputClass|default('input') %}
+{% set containerClass = containerClass|default(containerType) %}
+
+{% set containerAttributes = htmlAttributesStringToArray(field.containerAttributes|default('')) %}
+{% set containerAttributes = containerAttributes|merge({
+    'id': 'mauticform' ~ formName|default('') ~ '_' ~ id,
+    'class': containerAttributes.class|default([])|merge([
+        'mauticform-row',
+        'mauticform-' ~ containerClass,
+        'mauticform-field-' ~ field.order|default(0),
+    ]),
+}) %}
+
+<div {{ _self.renderAttributes(containerAttributes) }}>
+    {% if inForm is defined and true == inForm %}
+        <div {{ _self.renderAttributes(containerAttributes) }}>
+            <label class="text-muted">{{ field.label|purify }}</label>
+        </div>
+    {% else %}
+        {% set mauticFormInputId = 'mauticform_input_' ~ formName|trim|default('')|e('js') ~ '_' ~ field.alias|e('js') %}
+        
+        <script async type="text/javascript">
+            // Callback function to handle the reCAPTCHA response
+            function verifyCallback_{{ hashedFormName }}(response) {
+                document.getElementById("{{ mauticFormInputId }}").value = response; // Set the response token
+            }
+
+            // Function to execute reCAPTCHA on load
+            function onLoad{{ hashedFormName }}() {
+                grecaptcha.execute('{{ field.customParameters.site_key }}', {
+                    action: '{{ field.customParameters.tagAction }}' // Action name for reCAPTCHA
+                }).then(function(token) {
+                    console.log(token); // Log the token for debugging
+                    verifyCallback_{{ hashedFormName }}(token); // Call the verifyCallback with the token
+                }).catch(function(error) {
+                    console.error('reCAPTCHA execution failed:', error); // Handle the error
+                });
+            }
+        </script>
+        <script async src='https://www.google.com/recaptcha/api.js?trustedtypes=true&onload=onLoad{{ hashedFormName }}&render={{ field.customParameters.site_key }}'></script>
+        
+        {% set inputAttributes = htmlAttributesStringToArray(field.inputAttributes|default()) %}
+        {% set inputAttributes = inputAttributes|merge({
+            'id': mauticFormInputId,
+        }) %}
+        <input type="hidden" {{ _self.renderAttributes(inputAttributes) }}>
+        <span class="mauticform-errormsg" style="display: none;"></span>
+    {% endif %}
+</div>
+
+{% macro renderAttributes(attributes) %}
+    {% for attrName, attrValue in attributes %}
+        {{ attrName }}="{% if attrValue is iterable %}{{ attrValue|join(' ') }}{% else %}{{ attrValue }}{% endif %}"
+    {% endfor %}
+{% endmacro %}

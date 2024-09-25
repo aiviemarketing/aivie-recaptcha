@@ -10,19 +10,6 @@ return [
     'routes'      => [],
     'menu'        => [],
     'services'    => [
-        'events' => [
-            'mautic.recaptcha.event_listener.form_subscriber' => [
-                'class'     => \MauticPlugin\MauticRecaptchaBundle\EventListener\FormSubscriber::class,
-                'arguments' => [
-                    'event_dispatcher',
-                    'mautic.integrations.helper',
-                    'mautic.recaptcha.service.recaptcha_client',
-                    'mautic.lead.model.lead',
-                    'translator'
-                ],
-            ],
-        ],
-        'models' => [],
         'others' =>[
             'mautic.recaptcha.service.recaptcha_client' => [
                 'class'     => \MauticPlugin\MauticRecaptchaBundle\Service\RecaptchaClient::class,
