@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 use MauticPlugin\MauticRecaptchaBundle\Integration\RecaptchaIntegration;
 use MauticPlugin\MauticRecaptchaBundle\Integration\Support\ConfigSupport;
-use MauticPlugin\MauticRecaptchaBundle\Service\RecaptchaClient;
 
 return [
     'name'        => 'reCAPTCHA',
@@ -14,14 +13,6 @@ return [
     'routes'      => [],
     'menu'        => [],
     'services'    => [
-        'others' => [
-            'mautic.recaptcha.service.recaptcha_client' => [
-                'class'     => RecaptchaClient::class,
-                'arguments' => [
-                    'mautic.integrations.helper',
-                ],
-            ],
-        ],
         'integrations' => [
             'mautic.integration.recaptcha' => [
                 'class'     => RecaptchaIntegration::class,
