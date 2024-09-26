@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace MauticPlugin\MauticRecaptchaBundle\Integration;
 
 use Mautic\IntegrationsBundle\Integration\BasicIntegration;
-use Mautic\IntegrationsBundle\Integration\Interfaces\BasicInterface;
 use Mautic\IntegrationsBundle\Integration\ConfigurationTrait;
+use Mautic\IntegrationsBundle\Integration\Interfaces\BasicInterface;
 
 /**
  * Class RecaptchaIntegration.
  */
-class RecaptchaIntegration  extends BasicIntegration implements BasicInterface
+class RecaptchaIntegration extends BasicIntegration implements BasicInterface
 {
     use ConfigurationTrait;
 
