@@ -41,6 +41,7 @@
         {% set inputAttributes = htmlAttributesStringToArray(field.inputAttributes|default()) %}
         {% set inputAttributes = inputAttributes|merge({
             'id': mauticFormInputId,
+            'name': 'mauticform[' ~ field.alias ~ ']',
             'class': inputAttributes.class|default([])|merge([defaultInputClass]),
         }) %}
         <input type="hidden" {{ _self.renderAttributes(inputAttributes) }}>
