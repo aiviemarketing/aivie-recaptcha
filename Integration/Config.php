@@ -51,7 +51,7 @@ final class Config implements ConfigInterface
 
     public function getSiteKey(): string
     {
-        $siteKey = getenv('GC_RECAPTCHA_SITE_KEY') ?: $_ENV['GC_RECAPTCHA_SITE_KEY'];
+        $siteKey = getenv('GC_RECAPTCHA_SITE_KEY') ?: ($_ENV['GC_RECAPTCHA_SITE_KEY'] ?? null);
         if (empty($siteKey)) {
             return '';
         }
