@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace MauticPlugin\MauticRecaptchaBundle\Tests;
+namespace MauticPlugin\MauticRecaptchaBundle\Tests\Unit;
 
 use Mautic\FormBundle\Entity\Field;
 use Mautic\FormBundle\Event\FormBuilderEvent;
@@ -11,6 +11,7 @@ use Mautic\IntegrationsBundle\Helper\IntegrationsHelper;
 use Mautic\LeadBundle\Model\LeadModel;
 use Mautic\PluginBundle\Entity\Integration;
 use MauticPlugin\MauticRecaptchaBundle\EventListener\FormSubscriber;
+use MauticPlugin\MauticRecaptchaBundle\Integration\ConfigInterface;
 use MauticPlugin\MauticRecaptchaBundle\Integration\RecaptchaIntegration;
 use MauticPlugin\MauticRecaptchaBundle\Service\RecaptchaClient;
 use PHPUnit\Framework\MockObject\MockBuilder;
@@ -61,6 +62,8 @@ class FormSubscriberTest extends TestCase
      */
     private $formBuildEvent;
 
+    private ConfigInterface $configMock;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -73,6 +76,7 @@ class FormSubscriberTest extends TestCase
         $this->translator         = $this->createMock(TranslatorInterface::class);
         $this->validationEvent    = $this->createMock(ValidationEvent::class);
         $this->formBuildEvent     = $this->createMock(FormBuilderEvent::class);
+        $this->configMock         = $this->createMock(ConfigInterface::class);
 
         $this->eventDispatcher
             ->method('addListener')
@@ -99,9 +103,13 @@ class FormSubscriberTest extends TestCase
             ->method('verify')
             ->willReturn(true);
 
-        $this->integrationsHelper->expects($this->once())
-            ->method('getIntegration')
-            ->willReturn($this->integration);
+        $this->configMock->expects($this->once())
+            ->method('isPublished')
+            ->willReturn(true);
+
+        $this->configMock->expects($this->once())
+            ->method('isConfigured')
+            ->willReturn(true);
 
         $this->createFormSubscriber()->onFormValidate($this->validationEvent);
     }
@@ -116,9 +124,13 @@ class FormSubscriberTest extends TestCase
             ->method('getValue')
             ->willReturn('any-value-should-work');
 
-        $this->integrationsHelper->expects($this->once())
-            ->method('getIntegration')
-            ->willReturn($this->integration);
+        $this->configMock->expects($this->once())
+            ->method('isPublished')
+            ->willReturn(true);
+
+        $this->configMock->expects($this->once())
+            ->method('isConfigured')
+            ->willReturn(true);
 
         $this->createFormSubscriber()->onFormValidate($this->validationEvent);
     }
@@ -128,9 +140,13 @@ class FormSubscriberTest extends TestCase
         $this->recaptchaClient->expects($this->never())
             ->method('verify');
 
-        $this->integrationsHelper->expects($this->once())
-            ->method('getIntegration')
-            ->willReturn(null);
+        $this->configMock->expects($this->once())
+            ->method('isPublished')
+            ->willReturn(false);
+
+        $this->configMock->expects($this->any())
+            ->method('isConfigured')
+            ->willReturn(false);
 
         $this->createFormSubscriber()->onFormValidate($this->validationEvent);
     }
@@ -145,9 +161,13 @@ class FormSubscriberTest extends TestCase
             ->method('addValidator')
             ->with('plugin.recaptcha.validator');
 
-        $this->integrationsHelper->expects($this->once())
-            ->method('getIntegration')
-            ->willReturn($this->integration);
+        $this->configMock->expects($this->once())
+            ->method('isPublished')
+            ->willReturn(true);
+
+        $this->configMock->expects($this->once())
+            ->method('isConfigured')
+            ->willReturn(true);
 
         $this->createFormSubscriber()->onFormBuild($this->formBuildEvent);
     }
@@ -157,21 +177,22 @@ class FormSubscriberTest extends TestCase
         $this->formBuildEvent->expects($this->never())
             ->method('addFormField');
 
-        $this->integrationsHelper->expects($this->once())
-            ->method('getIntegration')
-            ->willReturn(null);
+        $this->configMock->expects($this->once())
+            ->method('isPublished')
+            ->willReturn(false);
+
+        $this->configMock->expects($this->any())
+            ->method('isConfigured')
+            ->willReturn(false);
 
         $this->createFormSubscriber()->onFormBuild($this->formBuildEvent);
     }
 
-    /**
-     * @return FormSubscriber
-     */
-    private function createFormSubscriber()
+    private function createFormSubscriber(): FormSubscriber
     {
         return new FormSubscriber(
             $this->eventDispatcher,
-            $this->integrationsHelper,
+            $this->configMock,
             $this->recaptchaClient,
             $this->leadModel,
             $this->translator

@@ -2,13 +2,14 @@
 
 declare(strict_types=1);
 
-namespace MauticPlugin\MauticRecaptchaBundle\Tests;
+namespace MauticPlugin\MauticRecaptchaBundle\Tests\Unit;
 
 use Mautic\FormBundle\Entity\Field;
 use Mautic\FormBundle\Event\ValidationEvent;
 use Mautic\IntegrationsBundle\Helper\IntegrationsHelper;
 use Mautic\LeadBundle\Model\LeadModel;
 use MauticPlugin\MauticRecaptchaBundle\EventListener\FormSubscriber;
+use MauticPlugin\MauticRecaptchaBundle\Integration\ConfigInterface;
 use MauticPlugin\MauticRecaptchaBundle\Integration\RecaptchaIntegration;
 use MauticPlugin\MauticRecaptchaBundle\Service\RecaptchaClient;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -75,12 +76,12 @@ class IntegrationTest extends TestCase
             ->method('getField')
             ->willReturn(new Field());
 
-        $formSubscriber = new FormSubscriber(
+        $formSubscriber =  new FormSubscriber(
             $this->eventDispatcher,
-            $this->integrationsHelper,
-            new RecaptchaClient($this->integrationsHelper),
-            $leadModel,
-            $translator
+            $this->createMock(ConfigInterface::class),
+            $this->createMock(RecaptchaClient::class),
+            $this->createMock(LeadModel::class),
+            $this->createMock(TranslatorInterface::class),
         );
         $formSubscriber->onFormValidate($validationEvent);
     }

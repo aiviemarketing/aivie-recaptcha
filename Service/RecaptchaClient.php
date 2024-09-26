@@ -28,8 +28,8 @@ class RecaptchaClient
      */
     public function __construct(private LoggerInterface $logger)
     {
-        $this->siteKey   = getenv('GC_RECAPTCHA_SITE_KEY');
-        $this->project   = getenv('GOOGLE_CLOUD_PROJECT');
+        $this->siteKey   = getenv('GC_RECAPTCHA_SITE_KEY') ?: '';
+        $this->project   = getenv('GOOGLE_CLOUD_PROJECT') ?: '';
     }
 
     public static function getSubscribedEvents(): array

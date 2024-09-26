@@ -12,7 +12,7 @@ use Mautic\LeadBundle\Event\LeadEvent;
 use Mautic\LeadBundle\LeadEvents;
 use Mautic\LeadBundle\Model\LeadModel;
 use MauticPlugin\MauticRecaptchaBundle\Form\Type\RecaptchaType;
-use MauticPlugin\MauticRecaptchaBundle\Integration\Config;
+use MauticPlugin\MauticRecaptchaBundle\Integration\ConfigInterface;
 use MauticPlugin\MauticRecaptchaBundle\RecaptchaEvents;
 use MauticPlugin\MauticRecaptchaBundle\Service\RecaptchaClient;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -23,7 +23,7 @@ class FormSubscriber implements EventSubscriberInterface
 {
     public function __construct(
         private EventDispatcherInterface $eventDispatcher,
-        private Config $config,
+        private ConfigInterface $config,
         private RecaptchaClient $recaptchaClient,
         private LeadModel $leadModel,
         private TranslatorInterface $translator
