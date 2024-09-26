@@ -36,6 +36,15 @@ class ConfigTest extends TestCase
         $this->config = new Config($this->integrationsHelper, $this->logger);
     }
 
+    protected function tearDown(): void
+    {
+        parent::tearDown();
+
+        // Remove the environment variable.
+        putenv('GC_RECAPTCHA_SITE_KEY');
+    }
+
+
     public function testIsPublishedThrowsException(): void
     {
         $this->integrationsHelper

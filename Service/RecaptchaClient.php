@@ -32,11 +32,6 @@ class RecaptchaClient
         $this->project   = getenv('GOOGLE_CLOUD_PROJECT') ?: '';
     }
 
-    public static function getSubscribedEvents(): array
-    {
-        return [];
-    }
-
     public function getTagActionName(): string
     {
         return self::TAG_NAME;
