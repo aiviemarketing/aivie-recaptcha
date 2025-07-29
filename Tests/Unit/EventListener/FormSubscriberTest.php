@@ -83,7 +83,7 @@ class FormSubscriberTest extends TestCase
             ->method('addFormField')
             ->with('plugin.recaptcha', $this->callback(function ($options) {
                 return $options['formType'] === RecaptchaType::class &&
-                    $options['site_key'] === 'test_site_key' &&
+                    $options['siteKey'] === 'test_site_key' &&
                     $options['tagAction'] === 'test_tag_action';
             }));
 
@@ -132,11 +132,8 @@ class FormSubscriberTest extends TestCase
 
     public function testLeadPostSaveListener(): void
     {
-        $leadEvent = $this->createMock(LeadEvent::class);
-        $leadEvent->method('isNew')->willReturn(true);
-
-        $lead = $this->createMock('Mautic\LeadBundle\Entity\Lead');
-        $leadEvent->method('getLead')->willReturn($lead);
+        $lead      = $this->createMock('Mautic\LeadBundle\Entity\Lead');
+        $leadEvent = new LeadEvent($lead, true);
 
         $this->leadModel->expects($this->never())
             ->method('deleteEntity')

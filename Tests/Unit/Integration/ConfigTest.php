@@ -10,11 +10,18 @@ use Mautic\IntegrationsBundle\Integration\Interfaces\IntegrationInterface;
 use Mautic\PluginBundle\Entity\Integration;
 use MauticPlugin\AivieRecaptchaBundle\Integration\Config;
 use MauticPlugin\AivieRecaptchaBundle\Integration\RecaptchaIntegration;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 
 class ConfigTest extends TestCase
 {
+    private MockObject $integrationsHelper;
+    private MockObject $integration;
+    private MockObject $integrationEntity;
+    private LoggerInterface|MockObject $logger;
+    private Config $config;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -32,6 +39,10 @@ class ConfigTest extends TestCase
         $this->integration
             ->method('getIntegrationConfiguration')
             ->willReturn($this->integrationEntity);
+
+        // Clear both getenv and $_ENV to avoid test contamination
+        putenv('GC_RECAPTCHA_SITE_KEY'); // unsets
+        unset($_ENV['GC_RECAPTCHA_SITE_KEY']);
 
         $this->config = new Config($this->integrationsHelper, $this->logger);
     }
