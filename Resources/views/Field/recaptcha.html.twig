@@ -3,7 +3,7 @@
 
 {% set formName = formName|default('')|replace({'_': ''}) %}
 {% set hashedFormName = md5(formName) %}
-{% set siteKey = field.customParameters.site_key %}
+{% set siteKey = field.customParameters.siteKey %}
 {% set tagAction = field.customParameters.tagAction %}
 {% set locale = app.request.locale|slice(0, 2) %}
 
