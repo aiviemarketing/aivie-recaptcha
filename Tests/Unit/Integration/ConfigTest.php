@@ -9,7 +9,7 @@ use Mautic\IntegrationsBundle\Helper\IntegrationsHelper;
 use Mautic\IntegrationsBundle\Integration\Interfaces\IntegrationInterface;
 use Mautic\PluginBundle\Entity\Integration;
 use MauticPlugin\AivieRecaptchaBundle\Integration\Config;
-use MauticPlugin\AivieRecaptchaBundle\Integration\RecaptchaIntegration;
+use MauticPlugin\AivieRecaptchaBundle\Integration\AivieRecaptchaIntegration;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
@@ -33,7 +33,7 @@ class ConfigTest extends TestCase
 
         $this->integrationsHelper
             ->method('getIntegration')
-            ->with(RecaptchaIntegration::NAME)
+            ->with(AivieRecaptchaIntegration::NAME)
             ->willReturn($this->integration);
 
         $this->integration

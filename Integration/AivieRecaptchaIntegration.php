@@ -8,15 +8,12 @@ use Mautic\IntegrationsBundle\Integration\BasicIntegration;
 use Mautic\IntegrationsBundle\Integration\ConfigurationTrait;
 use Mautic\IntegrationsBundle\Integration\Interfaces\BasicInterface;
 
-/**
- * Class RecaptchaIntegration.
- */
-class RecaptchaIntegration extends BasicIntegration implements BasicInterface
+class AivieRecaptchaIntegration extends BasicIntegration implements BasicInterface
 {
     use ConfigurationTrait;
 
-    public const NAME           = 'reCAPTCHA';
-    public const DISPLAY_NAME   = 'reCAPTCHA';
+    public const NAME = 'AivieRecaptcha';
+    public const DISPLAY_NAME = 'reCAPTCHA';
 
     public function getName(): string
     {

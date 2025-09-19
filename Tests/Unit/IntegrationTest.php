@@ -10,7 +10,7 @@ use Mautic\IntegrationsBundle\Helper\IntegrationsHelper;
 use Mautic\LeadBundle\Model\LeadModel;
 use MauticPlugin\AivieRecaptchaBundle\EventListener\FormSubscriber;
 use MauticPlugin\AivieRecaptchaBundle\Integration\ConfigInterface;
-use MauticPlugin\AivieRecaptchaBundle\Integration\RecaptchaIntegration;
+use MauticPlugin\AivieRecaptchaBundle\Integration\AivieRecaptchaIntegration;
 use MauticPlugin\AivieRecaptchaBundle\Service\RecaptchaClient;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -19,7 +19,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class IntegrationTest extends TestCase
 {
-    protected RecaptchaIntegration $integration;
+    protected AivieRecaptchaIntegration $integration;
 
     protected IntegrationsHelper $integrationsHelper;
 
@@ -29,7 +29,7 @@ class IntegrationTest extends TestCase
     {
         parent::setUp();
 
-        $this->integration = $this->getMockBuilder(RecaptchaIntegration::class)
+        $this->integration = $this->getMockBuilder(AivieRecaptchaIntegration::class)
             ->disableOriginalConstructor()
             ->getMock();
 

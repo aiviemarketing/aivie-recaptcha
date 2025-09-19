@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace MauticPlugin\AivieRecaptchaBundle\Integration;
 
+use MauticPlugin\AivieRecaptchaBundle\Integration\AivieRecaptchaIntegration;
 use Mautic\IntegrationsBundle\Exception\IntegrationNotFoundException;
 use Mautic\IntegrationsBundle\Helper\IntegrationsHelper;
 use Mautic\PluginBundle\Entity\Integration;
@@ -22,7 +23,7 @@ final class Config implements ConfigInterface
      */
     private function getIntegrationEntity(): Integration
     {
-        $integrationObject = $this->integrationsHelper->getIntegration(RecaptchaIntegration::NAME);
+        $integrationObject = $this->integrationsHelper->getIntegration(AivieRecaptchaIntegration::NAME);
 
         return $integrationObject->getIntegrationConfiguration();
     }

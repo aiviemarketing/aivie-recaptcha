@@ -2,27 +2,27 @@
 
 declare(strict_types=1);
 
-use MauticPlugin\AivieRecaptchaBundle\Integration\RecaptchaIntegration;
+use MauticPlugin\AivieRecaptchaBundle\Integration\AivieRecaptchaIntegration;
 use MauticPlugin\AivieRecaptchaBundle\Integration\Support\ConfigSupport;
 
 return [
-    'name'        => 'reCAPTCHA',
+    'name'        => 'reCAPTACHA',
     'description' => 'Enables reCAPTCHA integration.',
-    'version'     => '1.0.1',
-    'author'      => 'Adrian Schimpf',
+    'version'     => '6.0.0',
+    'author'      => 'Aivie',
     'routes'      => [],
     'menu'        => [],
     'services'    => [
         'integrations' => [
-            'mautic.integration.recaptcha' => [
-                'class'     => RecaptchaIntegration::class,
+            'mautic.integration.aivierecaptcha' => [
+                'class'     => AivieRecaptchaIntegration::class,
                 'tags'      => [
                     'mautic.integration',
                     'mautic.basic_integration',
                 ],
             ],
             // Provides the form types to use for the configuration UI
-            'mautic.integration.recaptcha.configuration' => [
+            'mautic.integration.aivierecaptcha.configuration' => [
                 'class'     => ConfigSupport::class,
                 'arguments' => [],
                 'tags'      => [
