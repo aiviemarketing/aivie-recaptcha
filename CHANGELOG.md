@@ -1,13 +1,7 @@
 # Changelog
 
 
-### [6.0.6](https://github.com/aiviemarketing/aivie-recaptcha/compare/v6.0.5...v6.0.6) (2025-10-31)
-
-### [6.0.5](https://github.com/aiviemarketing/aivie-recaptcha/compare/v6.0.4...v6.0.5) (2025-10-31)
-
-### [6.0.4](https://github.com/aiviemarketing/aivie-recaptcha/compare/v6.0.3...v6.0.4) (2025-10-31)
-
-### 6.0.3 (2025-10-31)
+### Prior 6.0.6 (2025-10-31)
 
 
 ### Bug Fixes
