@@ -1,6 +1,8 @@
 # Changelog
 
 
+### [6.0.4](https://github.com/aiviemarketing/aivie-recaptcha/compare/v6.0.3...v6.0.4) (2025-10-31)
+
 ### 6.0.3 (2025-10-31)
 
 
