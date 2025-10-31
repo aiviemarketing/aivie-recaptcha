@@ -38,5 +38,24 @@ reCAPTCHA v3 will rank traffic and interactions based on a score of 0.0 to 1.0, 
 
 ![score validation](/doc/score-validation.png?raw=true "plugin config")
 
+## Release Workflow
+
+This project uses GitHub Actions for automated releases. To push to protected branches (like `6.x`), you need to configure one of the following:
+
+### Option 1: Personal Access Token (Recommended)
+1. Create a Personal Access Token (PAT) with the following permissions:
+   - **Classic PAT**: `repo` scope (full control of private repositories)
+   - **Fine-grained PAT**: 
+     - Contents: Read and write
+     - Metadata: Read-only (automatically included)
+     - Releases: Write (if creating releases)
+2. Add it as a repository secret named `RELEASE_TOKEN` in Settings → Secrets and variables → Actions
+3. The workflow will use this token to bypass branch protection rules and push commits/tags to the protected branch
+
+### Option 2: Configure Branch Protection
+1. Go to Settings → Branches → Branch protection rules for `6.x`
+2. Enable "Allow specified actors to bypass required pull requests"
+3. Add `github-actions[bot]` to the bypass list
+
 ## Based on 
 https://github.com/KonstantinCodes/mautic-recaptcha

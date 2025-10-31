@@ -28,6 +28,7 @@ jobs:
         with:
           fetch-depth: 0
           ref: 6.x  # change if your default branch differs
+          token: ${{ secrets.RELEASE_TOKEN || secrets.GITHUB_TOKEN }}
 
       - name: Use Node
         uses: actions/setup-node@v4
@@ -66,7 +67,12 @@ jobs:
           git commit --amend --no-edit --no-verify
 
       - name: Push commit and tag
-        run: git push --follow-tags origin HEAD:6.x
+        env:
+          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN || secrets.GITHUB_TOKEN }}
+        run: |
+          # Configure git to use token for authentication
+          git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git
+          git push --follow-tags origin HEAD:6.x
 
       - name: Extract release notes (latest ## section)
         id: notes
