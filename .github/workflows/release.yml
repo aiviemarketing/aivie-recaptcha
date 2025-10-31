@@ -23,11 +23,19 @@ jobs:
   release:
     runs-on: ubuntu-latest
     steps:
+      - name: Get default branch
+        id: default_branch
+        run: |
+          DEFAULT_BRANCH=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}" | jq -r '.default_branch')
+          echo "branch=$DEFAULT_BRANCH" >> "$GITHUB_OUTPUT"
+          echo "Default branch: $DEFAULT_BRANCH"
+
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          ref: 6.x  # change if your default branch differs
+          ref: ${{ steps.default_branch.outputs.branch }}
           token: ${{ secrets.RELEASE_TOKEN || secrets.GITHUB_TOKEN }}
 
       - name: Use Node
@@ -59,6 +67,9 @@ jobs:
       - name: Capture new version
         run: echo "NEW_VERSION=$(jq -r .version package.json)" >> "$GITHUB_ENV"
 
+      - name: Capture package name
+        run: echo "PACKAGE_NAME=$(jq -r .name package.json)" >> "$GITHUB_ENV"
+
       - name: Sync version to composer.json
         run: |
           NEW_VERSION=$(jq -r .version package.json)
@@ -72,7 +83,7 @@ jobs:
         run: |
           # Configure git to use token for authentication
           git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git
-          git push --follow-tags origin HEAD:6.x
+          git push --follow-tags origin HEAD:${{ steps.default_branch.outputs.branch }}
 
       - name: Extract release notes (latest ## section)
         id: notes
@@ -98,6 +109,7 @@ jobs:
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           VERSION: ${{ env.NEW_VERSION }}
+          PACKAGE_NAME: ${{ env.PACKAGE_NAME }}
         run: |
           if [ -z "$SLACK_WEBHOOK_URL" ]; then
             echo "SLACK_WEBHOOK_URL secret not set"; exit 1;
@@ -106,17 +118,22 @@ jobs:
           # Grab latest "## ..." section
           NOTES="$(awk 'BEGIN{p=0} /^## /{if(p++) exit} p{print}' CHANGELOG.md | sed '/^## /d')"
 
-          # Build Block Kit: header + (optional) notes
-          header=$(jq -n --arg v "$VERSION" '{type:"header",text:{type:"plain_text",text:("Release " + $v)}}')
+          # Build changelog URL
+          DEFAULT_BRANCH="${{ steps.default_branch.outputs.branch }}"
+          CHANGELOG_URL="https://github.com/${GITHUB_REPOSITORY}/blob/${DEFAULT_BRANCH}/CHANGELOG.md"
+
+          # Build Block Kit: header + (optional) notes + changelog link
+          header=$(jq -n --arg p "$PACKAGE_NAME" --arg v "$VERSION" '{type:"header",text:{type:"plain_text",text:($p + " Release " + $v)}}')
           divider='{"type":"divider"}'
+          changelog_link=$(jq -n --arg url "$CHANGELOG_URL" '{type:"section",text:{type:"mrkdwn",text:"<" + $url + "|View Changelog>"}}')
 
           if [ -n "$NOTES" ]; then
             notes_block=$(jq -n --arg n "$NOTES" '{type:"section",text:{type:"mrkdwn",text:$n}}')
-            payload=$(jq -n --argjson h "$header" --argjson d "$divider" --argjson n "$notes_block" \
-              '{blocks: [$h, $d, $n]}')
+            payload=$(jq -n --argjson h "$header" --argjson d "$divider" --argjson n "$notes_block" --argjson c "$changelog_link" \
+              '{blocks: [$h, $d, $n, $c]}')
           else
-            payload=$(jq -n --argjson h "$header" --argjson d "$divider" \
-              '{blocks: [$h, $d]}')
+            payload=$(jq -n --argjson h "$header" --argjson d "$divider" --argjson c "$changelog_link" \
+              '{blocks: [$h, $d, $c]}')
           fi
 
           curl -sS -H 'Content-Type: application/json' -d "$payload" "$SLACK_WEBHOOK_URL"
