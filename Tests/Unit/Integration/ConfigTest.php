@@ -8,8 +8,8 @@ use Mautic\IntegrationsBundle\Exception\IntegrationNotFoundException;
 use Mautic\IntegrationsBundle\Helper\IntegrationsHelper;
 use Mautic\IntegrationsBundle\Integration\Interfaces\IntegrationInterface;
 use Mautic\PluginBundle\Entity\Integration;
-use MauticPlugin\AivieRecaptchaBundle\Integration\Config;
 use MauticPlugin\AivieRecaptchaBundle\Integration\AivieRecaptchaIntegration;
+use MauticPlugin\AivieRecaptchaBundle\Integration\Config;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
@@ -54,7 +54,6 @@ class ConfigTest extends TestCase
         // Remove the environment variable.
         putenv('GC_RECAPTCHA_SITE_KEY');
     }
-
 
     public function testIsPublishedThrowsException(): void
     {

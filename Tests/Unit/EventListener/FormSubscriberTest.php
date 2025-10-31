@@ -82,9 +82,9 @@ class FormSubscriberTest extends TestCase
         $event->expects($this->once())
             ->method('addFormField')
             ->with('plugin.recaptcha', $this->callback(function ($options) {
-                return $options['formType'] === RecaptchaType::class &&
-                    $options['siteKey'] === 'test_site_key' &&
-                    $options['tagAction'] === 'test_tag_action';
+                return RecaptchaType::class === $options['formType']
+                    && 'test_site_key' === $options['siteKey']
+                    && 'test_tag_action' === $options['tagAction'];
             }));
 
         $event->expects($this->once())

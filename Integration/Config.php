@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace MauticPlugin\AivieRecaptchaBundle\Integration;
 
-use MauticPlugin\AivieRecaptchaBundle\Integration\AivieRecaptchaIntegration;
 use Mautic\IntegrationsBundle\Exception\IntegrationNotFoundException;
 use Mautic\IntegrationsBundle\Helper\IntegrationsHelper;
 use Mautic\PluginBundle\Entity\Integration;
@@ -14,7 +13,7 @@ final class Config implements ConfigInterface
 {
     public function __construct(
         private IntegrationsHelper $integrationsHelper,
-        private LoggerInterface $logger
+        private LoggerInterface $logger,
     ) {
     }
 

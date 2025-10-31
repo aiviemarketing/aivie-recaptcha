@@ -12,7 +12,7 @@ class AivieRecaptchaIntegration extends BasicIntegration implements BasicInterfa
 {
     use ConfigurationTrait;
 
-    public const NAME = 'AivieRecaptcha';
+    public const NAME         = 'AivieRecaptcha';
     public const DISPLAY_NAME = 'reCAPTCHA';
 
     public function getName(): string

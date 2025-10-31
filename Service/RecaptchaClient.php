@@ -73,7 +73,7 @@ class RecaptchaClient
         string $recaptchaKey,
         string $token,
         string $project,
-        string $action
+        string $action,
     ): float {
         $client      = new RecaptchaEnterpriseServiceClient();
         $projectName = $client->projectName($project);
