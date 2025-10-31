@@ -2,7 +2,7 @@
   "name": "aiviemarketing/mautic-recaptcha",
   "description": "This plugin brings reCAPTCHA integration to Aivie and mautic.",
   "type": "mautic-plugin",
-  "version": "6.0.0",
+  "version": "6.0.3",
   "license": "GPL-3.0-only",
   "authors": [
     {
@@ -12,7 +12,12 @@
   ],
   "minimum-stability": "dev",
   "prefer-stable": true,
-  "keywords": ["mautic", "plugin", "integration", "aivie"],
+  "keywords": [
+    "mautic",
+    "plugin",
+    "integration",
+    "aivie"
+  ],
   "require": {
     "mautic/core-lib": "~6.0",
     "google/cloud-recaptcha-enterprise": "^1.15"

@@ -1,6 +1,6 @@
 {
     "name": "aivie-recaptcha",
-    "version": "6.0.2",
+    "version": "6.0.3",
     "repository": {
         "type": "git",
         "url": "https://github.com/aiviemarketing/aivie-recaptcha"
@@ -11,7 +11,12 @@
     },
     "author": "aivie.ch",
     "license": "GPL-3.0-only",
-    "keywords": ["mautic", "plugin", "integration", "aivie"],
+    "keywords": [
+        "mautic",
+        "plugin",
+        "integration",
+        "aivie"
+    ],
     "scripts": {
         "test": "ddev exec 'APP_ENV=test composer test plugins/AivieRecaptchaBundle'",
         "fixcs": "ddev exec composer fixcs plugins/AivieRecaptchaBundle",
