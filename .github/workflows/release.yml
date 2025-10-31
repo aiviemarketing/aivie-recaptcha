@@ -58,6 +58,13 @@ jobs:
       - name: Capture new version
         run: echo "NEW_VERSION=$(jq -r .version package.json)" >> "$GITHUB_ENV"
 
+      - name: Sync version to composer.json
+        run: |
+          NEW_VERSION=$(jq -r .version package.json)
+          jq --arg version "$NEW_VERSION" '.version = $version' composer.json > composer.json.tmp && mv composer.json.tmp composer.json
+          git add composer.json
+          git commit --amend --no-edit --no-verify
+
       - name: Push commit and tag
         run: git push --follow-tags origin HEAD:6.x
 
