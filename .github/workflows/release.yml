@@ -111,8 +111,10 @@ jobs:
           VERSION: ${{ env.NEW_VERSION }}
           PACKAGE_NAME: ${{ env.PACKAGE_NAME }}
         run: |
-          if [ -z "$SLACK_WEBHOOK_URL" ]; then
-            echo "SLACK_WEBHOOK_URL secret not set"; exit 1;
+          # Check webhook URL first and fail fast if not set
+          if [ -z "$SLACK_WEBHOOK_URL" ] || [ "$SLACK_WEBHOOK_URL" = "" ]; then
+            echo "Error: SLACK_WEBHOOK_URL secret is not set"
+            exit 1
           fi
 
           # Grab latest "## ..." section
@@ -121,11 +123,12 @@ jobs:
           # Build changelog URL
           DEFAULT_BRANCH="${{ steps.default_branch.outputs.branch }}"
           CHANGELOG_URL="https://github.com/${GITHUB_REPOSITORY}/blob/${DEFAULT_BRANCH}/CHANGELOG.md"
+          CHANGELOG_LINK_TEXT="<${CHANGELOG_URL}|View Changelog>"
 
           # Build Block Kit: header + (optional) notes + changelog link
           header=$(jq -n --arg p "$PACKAGE_NAME" --arg v "$VERSION" '{type:"header",text:{type:"plain_text",text:($p + " Release " + $v)}}')
           divider='{"type":"divider"}'
-          changelog_link=$(jq -n --arg url "$CHANGELOG_URL" '{type:"section",text:{type:"mrkdwn",text:"<" + $url + "|View Changelog>"}}')
+          changelog_link=$(jq -n --arg link "$CHANGELOG_LINK_TEXT" '{type:"section",text:{type:"mrkdwn",text:$link}}')
 
           if [ -n "$NOTES" ]; then
             notes_block=$(jq -n --arg n "$NOTES" '{type:"section",text:{type:"mrkdwn",text:$n}}')
