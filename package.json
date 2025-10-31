@@ -1,0 +1,21 @@
+{
+    "name": "aivie-recaptcha",
+    "version": "6.0.1",
+    "scripts": {
+        "test": "ddev exec 'APP_ENV=test composer test plugins/AivieRecaptchaBundle'",
+        "fixcs": "ddev exec composer fixcs plugins/AivieRecaptchaBundle",
+        "commit:all": "git add -A && git-cz",
+        "changelog:preview": "standard-version --dry-run",
+        "release": "gh workflow run 'Release' -r main -f bump=patch -f slack_notify=true",
+        "release:minor": "gh workflow run 'Release' -r main -f bump=minor -f slack_notify=true",
+        "release:major": "gh workflow run 'Release' -r main -f bump=major -f slack_notify=true"
+    },
+    "devDependencies": {
+        "@commitlint/cli": "^20.1.0",
+        "@commitlint/config-conventional": "^20.0.0",
+        "commitizen": "^4.3.1",
+        "cz-git": "^1.12.0",
+        "husky": "^9.1.7",
+        "standard-version": "^9.5.0"
+    }
+}

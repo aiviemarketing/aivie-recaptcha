@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+set -eu
+MSG_FILE="${1:-}"
+[ -z "${MSG_FILE}" ] && MSG_FILE="$(git rev-parse --git-path COMMIT_EDITMSG || true)"
+[ -n "${MSG_FILE}" ] && [ -f "${MSG_FILE}" ] || { echo "No commit message."; exit 1; }
+
+./node_modules/.bin/commitlint --edit "${MSG_FILE}" || {
+  echo ""
+  echo "✖ Commit message not conventional."
+  echo "  Use: npm run commit   # guided Commitizen prompt"
+  echo ""
+  exit 1
+}
+

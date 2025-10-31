@@ -1,0 +1,8 @@
+{
+  "path": "cz-git",
+  "prompt": {
+    "enableMultipleScopes": true,
+    "allowCustomScopes": true,
+    "scopes": ["builder","ui","ux","ci","docs","deps","security", "release"]
+  }
+}

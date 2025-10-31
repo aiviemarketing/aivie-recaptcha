@@ -26,7 +26,7 @@ class FormSubscriber implements EventSubscriberInterface
         private ConfigInterface $config,
         private RecaptchaClient $recaptchaClient,
         private LeadModel $leadModel,
-        private TranslatorInterface $translator
+        private TranslatorInterface $translator,
     ) {
     }
 
