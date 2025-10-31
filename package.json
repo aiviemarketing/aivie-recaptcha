@@ -6,9 +6,9 @@
         "fixcs": "ddev exec composer fixcs plugins/AivieRecaptchaBundle",
         "commit:all": "git add -A && git-cz",
         "changelog:preview": "standard-version --dry-run",
-        "release": "gh workflow run 'Release' -r main -f bump=patch -f slack_notify=true",
-        "release:minor": "gh workflow run 'Release' -r main -f bump=minor -f slack_notify=true",
-        "release:major": "gh workflow run 'Release' -r main -f bump=major -f slack_notify=true"
+        "release": "gh workflow run 'Release' -r 6.x -f bump=patch -f slack_notify=true",
+        "release:minor": "gh workflow run 'Release' -r 6.x -f bump=minor -f slack_notify=true",
+        "release:major": "gh workflow run 'Release' -r 6.x -f bump=major -f slack_notify=true"
     },
     "devDependencies": {
         "@commitlint/cli": "^20.1.0",
