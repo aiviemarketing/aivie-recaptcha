@@ -1,6 +1,6 @@
 {
     "name": "aivie-recaptcha",
-    "version": "6.0.1",
+    "version": "6.0.2",
     "scripts": {
         "test": "ddev exec 'APP_ENV=test composer test plugins/AivieRecaptchaBundle'",
         "fixcs": "ddev exec composer fixcs plugins/AivieRecaptchaBundle",
