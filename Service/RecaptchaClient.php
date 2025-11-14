@@ -52,7 +52,7 @@ class RecaptchaClient
         $riskScore = $this->createAssessment($this->siteKey, $token, $this->project, $this->getTagActionName());
         $minScore  = (float) ArrayHelper::getValue('minScore', $field->getProperties());
         if ($riskScore > 0 && $minScore <= $riskScore) {
-            $this->logger->error('Recaptcha: valid - minimum score ('.$minScore.') is met: '.$riskScore);
+            $this->logger->debug('Recaptcha: valid - minimum score ('.$minScore.') is met: '.$riskScore);
 
             return true;
         }
@@ -89,16 +89,17 @@ class RecaptchaClient
 
             if (false == $response->getTokenProperties()->getValid()) {
                 $this->logger->error(sprintf(
-                    'Recaptcha: CreateAssessment() failed: because the token was invalid. Reason: %s',
+                    'Recaptcha: CreateAssessment() failed: token is invalid. Check the siteKey. Reason: %s',
                     InvalidReason::name($response->getTokenProperties()->getInvalidReason())
-                ));
+                ), ['projectName' => $projectName]
+                );
 
                 return 0;
             }
 
             $tagAction = $response->getTokenProperties()->getAction();
             if ($tagAction == $action) {
-                $this->logger->error('Recaptcha: The score is:'.$response->getRiskAnalysis()->getScore());
+                $this->logger->debug('Recaptcha: The score is:'.$response->getRiskAnalysis()->getScore());
 
                 return $response->getRiskAnalysis()->getScore();
             } else {
