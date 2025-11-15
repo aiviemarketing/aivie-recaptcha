@@ -92,7 +92,8 @@ class FormSubscriber implements EventSubscriberInterface
                     $filteredData[$key] = '*********';
                 // if it is a an email field, mask the value by replacing the domain with *
                 } elseif (is_string($key) && str_contains(strtolower($key), 'mail')) {
-                    $filteredData[$key] = str_replace(substr($value, strpos($value, '@') + 1), '***', $value);
+                    $filteredData[$key]         = str_replace(substr($value, strpos($value, '@') + 1), '***', $value);
+                    $filteredData[$key.'_hash'] = $this->hashPii($value);
                 } else {
                     $filteredData[$key] = $value;
                 }
@@ -128,5 +129,13 @@ class FormSubscriber implements EventSubscriberInterface
                 $this->leadModel->deleteEntity($event->getLead());
             }
         }, -255);
+    }
+
+    /**
+     * Create a deterministic, irreversible hash (non-PII) of e.g. the email address.
+     */
+    private function hashPii(array $data): string
+    {
+        return md5(strtolower(trim($data)));
     }
 }
