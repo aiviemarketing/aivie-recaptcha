@@ -20,7 +20,7 @@
   ],
   "require": {
     "mautic/core-lib": "~6.0",
-    "google/cloud-recaptcha-enterprise": "^1.15"
+    "google/cloud-recaptcha-enterprise": "^1.17"
   },
   "extra": {
     "install-directory-name": "AivieRecaptchaBundle"

@@ -17,6 +17,7 @@ use MauticPlugin\AivieRecaptchaBundle\Integration\ConfigInterface;
 use MauticPlugin\AivieRecaptchaBundle\RecaptchaEvents;
 use MauticPlugin\AivieRecaptchaBundle\Service\RecaptchaClient;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -27,6 +28,7 @@ class FormSubscriberTest extends TestCase
     private $recaptchaClient;
     private $leadModel;
     private $translator;
+    private $logger;
     private FormSubscriber $subscriber;
 
     protected function setUp(): void
@@ -36,13 +38,15 @@ class FormSubscriberTest extends TestCase
         $this->recaptchaClient = $this->createMock(RecaptchaClient::class);
         $this->leadModel       = $this->createMock(LeadModel::class);
         $this->translator      = $this->createMock(TranslatorInterface::class);
+        $this->logger          = $this->createMock(LoggerInterface::class);
 
         $this->subscriber = new FormSubscriber(
             $this->eventDispatcher,
             $this->config,
             $this->recaptchaClient,
             $this->leadModel,
-            $this->translator
+            $this->translator,
+            $this->logger,
         );
     }
 
@@ -52,6 +56,7 @@ class FormSubscriberTest extends TestCase
             [
                 FormEvents::FORM_ON_BUILD         => ['onFormBuild', 0],
                 RecaptchaEvents::ON_FORM_VALIDATE => ['onFormValidate', 0],
+                FormEvents::FORM_ON_SUBMIT        => ['onFormSubmit', 0],
             ],
             FormSubscriber::getSubscribedEvents()
         );

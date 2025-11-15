@@ -56,7 +56,7 @@ class RecaptchaClient
 
             return true;
         }
-        $this->logger->error('Recaptcha: risky - minimum score ('.$minScore.') is NOT met: '.$riskScore);
+        $this->logger->debug('Recaptcha: risky - minimum score ('.$minScore.') is NOT met: '.$riskScore);
 
         return false;
     }

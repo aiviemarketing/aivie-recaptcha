@@ -6,6 +6,7 @@ namespace MauticPlugin\AivieRecaptchaBundle\EventListener;
 
 use Mautic\CoreBundle\Exception\BadConfigurationException;
 use Mautic\FormBundle\Event\FormBuilderEvent;
+use Mautic\FormBundle\Event\SubmissionEvent;
 use Mautic\FormBundle\Event\ValidationEvent;
 use Mautic\FormBundle\FormEvents;
 use Mautic\LeadBundle\Event\LeadEvent;
@@ -15,6 +16,7 @@ use MauticPlugin\AivieRecaptchaBundle\Form\Type\RecaptchaType;
 use MauticPlugin\AivieRecaptchaBundle\Integration\ConfigInterface;
 use MauticPlugin\AivieRecaptchaBundle\RecaptchaEvents;
 use MauticPlugin\AivieRecaptchaBundle\Service\RecaptchaClient;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -27,6 +29,7 @@ class FormSubscriber implements EventSubscriberInterface
         private RecaptchaClient $recaptchaClient,
         private LeadModel $leadModel,
         private TranslatorInterface $translator,
+        private LoggerInterface $logger,
     ) {
     }
 
@@ -37,6 +40,7 @@ class FormSubscriber implements EventSubscriberInterface
     {
         return [
             FormEvents::FORM_ON_BUILD         => ['onFormBuild', 0],
+            FormEvents::FORM_ON_SUBMIT        => ['onFormSubmit', 0],
             RecaptchaEvents::ON_FORM_VALIDATE => ['onFormValidate', 0],
         ];
     }
@@ -70,6 +74,39 @@ class FormSubscriber implements EventSubscriberInterface
         ]);
     }
 
+    public function onFormSubmit(SubmissionEvent $event): void
+    {
+        if (!$this->config->isPublished() || !$this->config->isConfigured() || 'debug' !== $_ENV['MAUTIC_LOG_LEVEL']) {
+            return;
+        }
+
+        // Only log if debug level is enabled (debug() automatically checks this)
+        $formData = $event->getPost();
+
+        // Filter out Mautic internal fields and sensitive data
+        $filteredData = [];
+        foreach ($formData as $key => $value) {
+            if (!in_array($key, ['messenger', 'submit', 'formId', 'formid', 'formName', 'return', 'g-recaptcha-response'])) {
+                // Mask password fields
+                if (is_string($key) && str_contains(strtolower($key), 'pass')) {
+                    $filteredData[$key] = '*********';
+                // if it is a an email field, mask the value by replacing the domain with *
+                } elseif (is_string($key) && str_contains(strtolower($key), 'mail')) {
+                    $filteredData[$key] = str_replace(substr($value, strpos($value, '@') + 1), '***', $value);
+                } else {
+                    $filteredData[$key] = $value;
+                }
+            }
+        }
+
+        $this->logger->debug('Recaptcha: Form submitted', [
+            'form_id'       => $event->getForm()->getId(),
+            'form_name'     => $event->getForm()->getName(),
+            'submission_id' => $event->getSubmission()->getId(),
+            'form_data'     => $filteredData,
+        ]);
+    }
+
     public function onFormValidate(ValidationEvent $event): void
     {
         if (!$this->config->isPublished() || !$this->config->isConfigured()) {
@@ -83,7 +120,11 @@ class FormSubscriber implements EventSubscriberInterface
         $event->failedValidation(null === $this->translator ? 'reCAPTCHA was not successful.' : $this->translator->trans('mautic.integration.recaptcha.failure_message'));
 
         $this->eventDispatcher->addListener(LeadEvents::LEAD_POST_SAVE, function (LeadEvent $event) {
+            $this->logger->info('Recaptcha: lead is not valid', [
+                'lead' => $event->getLead()->getId(),
+            ]);
             if ($event->isNew()) {
+                $this->logger->info('Recaptcha: lead is new and not valid, deleting it', ['lead' => $event->getLead()->getId()]);
                 $this->leadModel->deleteEntity($event->getLead());
             }
         }, -255);

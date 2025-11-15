@@ -14,6 +14,7 @@ use MauticPlugin\AivieRecaptchaBundle\Integration\ConfigInterface;
 use MauticPlugin\AivieRecaptchaBundle\Service\RecaptchaClient;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -82,6 +83,7 @@ class IntegrationTest extends TestCase
             $this->createMock(RecaptchaClient::class),
             $this->createMock(LeadModel::class),
             $this->createMock(TranslatorInterface::class),
+            $this->createMock(LoggerInterface::class),
         );
         $formSubscriber->onFormValidate($validationEvent);
     }
