@@ -88,6 +88,11 @@ class RecaptchaClient
             );
 
             if (false == $response->getTokenProperties()->getValid()) {
+                if ('DUPE' === $response->getTokenProperties()->getInvalidReason()) {
+                    $this->logger->info('Recaptcha: Token is a duplicate. Reason: '.$response->getTokenProperties()->getInvalidReason());
+
+                    return 0;
+                }
                 $this->logger->error(sprintf(
                     'Recaptcha: CreateAssessment() failed: token is invalid. Check the siteKey. Reason: %s',
                     InvalidReason::name($response->getTokenProperties()->getInvalidReason())
