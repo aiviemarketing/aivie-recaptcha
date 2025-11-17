@@ -134,7 +134,7 @@ class FormSubscriber implements EventSubscriberInterface
     /**
      * Create a deterministic, irreversible hash (non-PII) of e.g. the email address.
      */
-    private function hashPii(array $data): string
+    private function hashPii(string $data): string
     {
         return md5(strtolower(trim($data)));
     }
