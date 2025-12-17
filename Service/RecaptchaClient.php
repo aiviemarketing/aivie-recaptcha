@@ -10,6 +10,7 @@ use Google\Cloud\RecaptchaEnterprise\V1\RecaptchaEnterpriseServiceClient;
 use Google\Cloud\RecaptchaEnterprise\V1\TokenProperties\InvalidReason;
 use Mautic\CoreBundle\Helper\ArrayHelper;
 use Mautic\FormBundle\Entity\Field;
+use MauticPlugin\AivieRecaptchaBundle\Integration\ConfigInterface;
 use Psr\Log\LoggerInterface;
 
 class RecaptchaClient
@@ -17,20 +18,13 @@ class RecaptchaClient
     // may only include "A-Za-z/_". Do not include user-specific information
     private const TAG_NAME = 'mautic_form';
 
-    private string $siteKey;
-
-    /**
-     * the Google cloud project id.
-     */
-    private string $project;
-
     /**
      * FormSubscriber constructor.
      */
-    public function __construct(private LoggerInterface $logger)
-    {
-        $this->siteKey   = getenv('GC_RECAPTCHA_SITE_KEY') ?: '';
-        $this->project   = getenv('GOOGLE_CLOUD_PROJECT') ?: '';
+    public function __construct(
+        private ConfigInterface $config,
+        private LoggerInterface $logger,
+    ) {
     }
 
     public function getTagActionName(): string
@@ -49,7 +43,16 @@ class RecaptchaClient
             return false;
         }
 
-        $riskScore = $this->createAssessment($this->siteKey, $token, $this->project, $this->getTagActionName());
+        $siteKey   = $this->config->getSiteKey();
+        $projectId = $this->config->getProjectId();
+
+        if (empty($siteKey) || empty($projectId)) {
+            $this->logger->error('Recaptcha: Missing site_key and/or projectId. Please configure the integration.');
+
+            return false;
+        }
+
+        $riskScore = $this->createAssessment($siteKey, $token, $projectId, $this->getTagActionName());
         $minScore  = (float) ArrayHelper::getValue('minScore', $field->getProperties());
         if ($riskScore > 0 && $minScore <= $riskScore) {
             $this->logger->debug('Recaptcha: valid - minimum score ('.$minScore.') is met: '.$riskScore);

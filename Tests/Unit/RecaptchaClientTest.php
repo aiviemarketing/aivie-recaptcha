@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace MauticPlugin\AivieRecaptchaBundle\Tests\Unit;
 
 use Mautic\FormBundle\Entity\Field;
+use MauticPlugin\AivieRecaptchaBundle\Integration\ConfigInterface;
 use MauticPlugin\AivieRecaptchaBundle\Service\RecaptchaClient;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
@@ -28,6 +29,10 @@ class RecaptchaClientTest extends TestCase
 
     private function createRecaptchaClient(): RecaptchaClient
     {
-        return new RecaptchaClient($this->createMock(LoggerInterface::class));
+        $config = $this->createMock(ConfigInterface::class);
+        $config->method('getSiteKey')->willReturn('');
+        $config->method('getProjectId')->willReturn('');
+
+        return new RecaptchaClient($config, $this->createMock(LoggerInterface::class));
     }
 }

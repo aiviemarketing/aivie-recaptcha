@@ -11,4 +11,6 @@ interface ConfigInterface
     public function isPublished(): bool;
 
     public function getSiteKey(): string;
+
+    public function getProjectId(): string;
 }

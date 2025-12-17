@@ -43,6 +43,8 @@ class ConfigTest extends TestCase
         // Clear both getenv and $_ENV to avoid test contamination
         putenv('GC_RECAPTCHA_SITE_KEY'); // unsets
         unset($_ENV['GC_RECAPTCHA_SITE_KEY']);
+        putenv('GOOGLE_CLOUD_PROJECT'); // unsets
+        unset($_ENV['GOOGLE_CLOUD_PROJECT']);
 
         $this->config = new Config($this->integrationsHelper, $this->logger);
     }
@@ -53,6 +55,7 @@ class ConfigTest extends TestCase
 
         // Remove the environment variable.
         putenv('GC_RECAPTCHA_SITE_KEY');
+        putenv('GOOGLE_CLOUD_PROJECT');
     }
 
     public function testIsPublishedThrowsException(): void
@@ -90,6 +93,7 @@ class ConfigTest extends TestCase
     {
         // Simulate environment variable
         putenv('GC_RECAPTCHA_SITE_KEY=test_site_key');
+        putenv('GOOGLE_CLOUD_PROJECT=test_project');
 
         $this->assertTrue($this->config->isConfigured());
     }
@@ -98,12 +102,13 @@ class ConfigTest extends TestCase
     {
         // Remove the env variable
         putenv('GC_RECAPTCHA_SITE_KEY');
+        putenv('GOOGLE_CLOUD_PROJECT');
 
         // Expect error logging
         $this->logger
             ->expects($this->once())
             ->method('error')
-            ->with('Recaptcha is not configured properly - check your ENV variables');
+            ->with('Recaptcha is not configured properly - check your integration settings or ENV variables');
 
         $this->assertFalse($this->config->isConfigured());
     }
@@ -118,5 +123,34 @@ class ConfigTest extends TestCase
     {
         putenv('GC_RECAPTCHA_SITE_KEY');
         $this->assertSame('', $this->config->getSiteKey());
+    }
+
+    public function testGetProjectReturnsCorrectValue(): void
+    {
+        putenv('GOOGLE_CLOUD_PROJECT=test_project');
+        $this->assertSame('test_project', $this->config->getProjectId());
+    }
+
+    public function testGetProjectReturnsEmptyWhenNotSet(): void
+    {
+        putenv('GOOGLE_CLOUD_PROJECT');
+        $this->assertSame('', $this->config->getProjectId());
+    }
+
+    public function testApiKeysOverrideEnv(): void
+    {
+        $this->integrationEntity
+            ->method('getApiKeys')
+            ->willReturn([
+                AivieRecaptchaIntegration::SITE_KEY_NAME    => 'ui_site_key',
+                AivieRecaptchaIntegration::PROJECT_ID_NAME  => 'ui_project',
+            ]);
+
+        putenv('GC_RECAPTCHA_SITE_KEY=env_site_key');
+        putenv('GOOGLE_CLOUD_PROJECT=env_project');
+
+        $this->assertSame('ui_site_key', $this->config->getSiteKey());
+        $this->assertSame('ui_project', $this->config->getProjectId());
+        $this->assertTrue($this->config->isConfigured());
     }
 }
