@@ -17,7 +17,8 @@ Execute `composer require google/cloud-recaptcha-enterprise` in the main directo
 
 > @todo needs to be moved to the plugins composer.json, when we support composer v2. So we can install the https://github.com/mautic/composer-plugin.
 
-
+- This plugin is already installed with your [Aivie Mautic Hosting](https://aivie.ch/en/mautic-hosting-and-installation/?utm_source=github&utm_medium=recaptcha&utm_campaign=opensource&utm_content=hosting)
+  
 ## Configuration
 Navigate to the Plugins page and click "Install/Upgrade Plugins". You should now see a "reCAPTCHA" plugin. Open it to enable it.
 
@@ -59,3 +60,8 @@ This project uses GitHub Actions for automated releases. To push to protected br
 
 ## Based on 
 https://github.com/KonstantinCodes/mautic-recaptcha
+
+## Contributers
+<a href="https://aivie.ch/en/?utm_source=github&utm_medium=recaptcha&utm_campaign=opensource&utm_content=contact>">Aivie</a><br>
+<a href="https://aivie.ch/en/?utm_source=github&utm_medium=recaptcha&utm_campaign=opensource&utm_content=contact>">
+  <img width="200px" src="https://cdn.aivie.ch/media/wp/2021/06/19131704/logo-aivie-fast-kein-rand-400w.png"></img></a>
