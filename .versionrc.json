@@ -3,15 +3,17 @@
     "types": [
       { "type": "feat", "section": "Features" },
       { "type": "fix", "section": "Bug Fixes" },
+      { "type": "ux", "section": "UX" },
+      { "type": "obs", "section": "Operations" },
       { "type": "perf", "section": "Performance Improvements" },
-      { "type": "refactor", "section": "Refactoring" },
       { "type": "revert", "section": "Reverts" },
-      { "type": "docs", "section": "Docs", "hidden": false },
-      { "type": "ui", "section": "UX", "hidden": false },
+      { "type": "security", "section": "Security" },
+      { "type": "refactor", "hidden": true },
+      { "type": "docs", "hidden": true },
+      { "type": "style", "hidden": true },
       { "type": "chore", "hidden": true },
       { "type": "test", "hidden": true },
       { "type": "build", "hidden": true },
-      { "type": "security", "hidden": true },
       { "type": "ci", "hidden": true }
     ],
     "commitAll": true
