@@ -82,7 +82,7 @@ class ConfigTest extends TestCase
     /**
      * @return iterable<string, bool[]>
      */
-    public function dataForPluginIsPublished(): iterable
+    public static function dataForPluginIsPublished(): iterable
     {
         yield 'Published' => [true, true];
 

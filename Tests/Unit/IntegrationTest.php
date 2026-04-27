@@ -37,9 +37,6 @@ class IntegrationTest extends TestCase
         $this->eventDispatcher = $this->getMockBuilder(EventDispatcherInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $this->eventDispatcher
-            ->method('addListener')
-            ->willReturn(true);
 
         $this->integrationsHelper = $this->getMockBuilder(IntegrationsHelper::class)
             ->disableOriginalConstructor()

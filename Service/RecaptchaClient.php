@@ -110,9 +110,8 @@ class RecaptchaClient
                 $this->logger->debug('Recaptcha: The score is:'.$response->getRiskAnalysis()->getScore());
 
                 return $response->getRiskAnalysis()->getScore();
-            } else {
-                $message = "Recaptcha: The action attribute in your reCAPTCHA tag ($tagAction) does not match the action you are expecting to score ($action)";
             }
+            $message = "Recaptcha: The action attribute in your reCAPTCHA tag ($tagAction) does not match the action you are expecting to score ($action)";
         } catch (\Exception $e) {
             $message = 'Recaptcha: CreateAssessment() call failed with the following error: '.$e->getMessage();
         }
