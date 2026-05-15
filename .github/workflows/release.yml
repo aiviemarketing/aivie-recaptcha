@@ -32,14 +32,14 @@ jobs:
           echo "Default branch: $DEFAULT_BRANCH"
 
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
           ref: ${{ steps.default_branch.outputs.branch }}
           token: ${{ secrets.RELEASE_TOKEN || secrets.GITHUB_TOKEN }}
 
       - name: Use Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: '22.x'
           cache: 'npm'
@@ -72,9 +72,11 @@ jobs:
 
       - name: Sync version to composer.json
         run: |
-          NEW_VERSION=$(jq -r .version package.json)
-          jq --arg version "$NEW_VERSION" '.version = $version' composer.json > composer.json.tmp && mv composer.json.tmp composer.json
-          git add composer.json
+          chmod +x scripts/sync-version-files.js
+          scripts/sync-version-files.js
+          for file in package.json package-lock.json composer.json Config/config.php; do
+            [ -f "$file" ] && git add "$file"
+          done
           git commit --amend --no-edit --no-verify
 
       - name: Push commit and tag
@@ -88,18 +90,15 @@ jobs:
       - name: Extract release notes (latest ## section)
         id: notes
         run: |
-          NOTES="$(awk 'BEGIN{p=0} /^## /{if(p++) exit} p{print}' CHANGELOG.md)"
-          NOTES="${NOTES//'%'/'%25'}"
-          NOTES="${NOTES//$'\n'/'%0A'}"
-          NOTES="${NOTES//$'\r'/'%0D'}"
-          echo "notes=$NOTES" >> "$GITHUB_OUTPUT"
+          chmod +x scripts/extract-release-notes.sh
+          scripts/extract-release-notes.sh CHANGELOG.md > release_notes.md
 
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           tag_name: v${{ env.NEW_VERSION }}     # remove "v" if you set tagPrefix:""
           name: v${{ env.NEW_VERSION }}
-          body: ${{ steps.notes.outputs.notes }}
+          body_path: release_notes.md
           prerelease: ${{ contains(env.NEW_VERSION, '-') }}  # true if you use prerelease tags in future
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -108,37 +107,11 @@ jobs:
         if: ${{ inputs.slack_notify == 'true' }}
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          VERSION: ${{ env.NEW_VERSION }}
+          NEW_VERSION: ${{ env.NEW_VERSION }}
           PACKAGE_NAME: ${{ env.PACKAGE_NAME }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_SERVER_URL: ${{ github.server_url }}
+          DEFAULT_BRANCH: ${{ steps.default_branch.outputs.branch }}
         run: |
-          # Check webhook URL first and fail fast if not set
-          if [ -z "$SLACK_WEBHOOK_URL" ] || [ "$SLACK_WEBHOOK_URL" = "" ]; then
-            echo "Error: SLACK_WEBHOOK_URL secret is not set"
-            exit 1
-          fi
-
-          # Grab latest "## ..." section
-          NOTES="$(awk 'BEGIN{p=0} /^## /{if(p++) exit} p{print}' CHANGELOG.md | sed '/^## /d')"
-
-          # Build changelog URL
-          DEFAULT_BRANCH="${{ steps.default_branch.outputs.branch }}"
-          CHANGELOG_URL="https://github.com/${GITHUB_REPOSITORY}/blob/${DEFAULT_BRANCH}/CHANGELOG.md"
-          CHANGELOG_LINK_TEXT="<${CHANGELOG_URL}|View Changelog>"
-
-          # Build Block Kit: header + (optional) notes + changelog link
-          header=$(jq -n --arg p "$PACKAGE_NAME" --arg v "$VERSION" '{type:"header",text:{type:"plain_text",text:($p + " Release " + $v)}}')
-          divider='{"type":"divider"}'
-          changelog_link=$(jq -n --arg link "$CHANGELOG_LINK_TEXT" '{type:"section",text:{type:"mrkdwn",text:$link}}')
-
-          if [ -n "$NOTES" ]; then
-            notes_block=$(jq -n --arg n "$NOTES" '{type:"section",text:{type:"mrkdwn",text:$n}}')
-            payload=$(jq -n --argjson h "$header" --argjson d "$divider" --argjson n "$notes_block" --argjson c "$changelog_link" \
-              '{blocks: [$h, $d, $n, $c]}')
-          else
-            payload=$(jq -n --argjson h "$header" --argjson d "$divider" --argjson c "$changelog_link" \
-              '{blocks: [$h, $d, $c]}')
-          fi
-
-          curl -sS -H 'Content-Type: application/json' -d "$payload" "$SLACK_WEBHOOK_URL"
-
-
+          chmod +x scripts/post-release-notes-to-slack.sh
+          scripts/post-release-notes-to-slack.sh release_notes.md
