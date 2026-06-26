@@ -12,6 +12,7 @@ return static function (ContainerConfigurator $configurator) {
         ->autoconfigure();
 
     $excludes = [
+        'node_modules',
     ];
 
     $services->load('MauticPlugin\\AivieRecaptchaBundle\\', '../')
