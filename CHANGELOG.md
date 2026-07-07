@@ -1,6 +1,22 @@
 # Changelog
 
 
+### [7.0.1](https://github.com/aiviemarketing/aivie-recaptcha/compare/v6.0.6...v7.0.1) (2026-07-07)
+
+
+### Features
+
+* allow users to change the site_key and project_id in the UI ([2688c1e](https://github.com/aiviemarketing/aivie-recaptcha/commit/2688c1ec29f60c102534814de724c2ef251037f2))
+
+
+### Bug Fixes
+
+* **repo:** do not autoload node_modules ([3a0ca46](https://github.com/aiviemarketing/aivie-recaptcha/commit/3a0ca46b152dec5505cbca315d474fc6d66bf69b))
+* use correct type ([aa9b615](https://github.com/aiviemarketing/aivie-recaptcha/commit/aa9b61553913a3863cfd14b9d5a42c68145e9dae))
+
+# Changelog
+
+
 ### Prior 6.0.6 (2025-10-31)
 
 

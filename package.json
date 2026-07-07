@@ -1,34 +1,34 @@
 {
-    "name": "aivie-recaptcha",
-    "version": "7.0.0",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/aiviemarketing/aivie-recaptcha"
-    },
-    "homepage": "https://aivie.ch/",
-    "bugs": {
-        "url": "https://github.com/aiviemarketing/aivie-recaptcha/issues"
-    },
-    "author": "aivie.ch",
-    "license": "GPL-3.0-only",
-    "keywords": [
-        "mautic",
-        "plugin",
-        "integration",
-        "aivie"
-    ],
-    "scripts": {
-        "test": "ddev exec 'APP_ENV=test composer test plugins/AivieRecaptchaBundle'",
-        "fixcs": "ddev exec composer fixcs plugins/AivieRecaptchaBundle",
-        "changelog:preview": "standard-version --dry-run",
-        "release": "npm run release:patch",
-        "release:patch": "gh workflow run 'Release' -r 7.x -f bump=patch -f post_to_slack=true",
-        "release:minor": "gh workflow run 'Release' -r 7.x -f bump=minor -f post_to_slack=true",
-        "release:major": "gh workflow run 'Release' -r 7.x -f bump=major -f post_to_slack=true"
-    },
-    "devDependencies": {
-        "@commitlint/cli": "^20.1.0",
-        "@commitlint/config-conventional": "^20.0.0",
-        "standard-version": "^9.5.0"
-    }
+  "name": "aivie-recaptcha",
+  "version": "7.0.1",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aiviemarketing/aivie-recaptcha"
+  },
+  "homepage": "https://aivie.ch/",
+  "bugs": {
+    "url": "https://github.com/aiviemarketing/aivie-recaptcha/issues"
+  },
+  "author": "aivie.ch",
+  "license": "GPL-3.0-only",
+  "keywords": [
+    "mautic",
+    "plugin",
+    "integration",
+    "aivie"
+  ],
+  "scripts": {
+    "test": "ddev exec 'APP_ENV=test composer test plugins/AivieRecaptchaBundle'",
+    "fixcs": "ddev exec composer fixcs plugins/AivieRecaptchaBundle",
+    "changelog:preview": "standard-version --dry-run",
+    "release": "npm run release:patch",
+    "release:patch": "gh workflow run 'Release' -r 7.x -f bump=patch -f post_to_slack=true",
+    "release:minor": "gh workflow run 'Release' -r 7.x -f bump=minor -f post_to_slack=true",
+    "release:major": "gh workflow run 'Release' -r 7.x -f bump=major -f post_to_slack=true"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^20.1.0",
+    "@commitlint/config-conventional": "^20.0.0",
+    "standard-version": "^9.5.0"
+  }
 }

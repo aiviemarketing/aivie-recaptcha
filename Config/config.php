@@ -8,7 +8,7 @@ use MauticPlugin\AivieRecaptchaBundle\Integration\Support\ConfigSupport;
 return [
     'name'        => 'reCAPTACHA',
     'description' => 'Enables reCAPTCHA integration.',
-    'version'     => '6.0.0',
+    'version'     => '7.0.1',
     'author'      => 'Aivie',
     'routes'      => [],
     'menu'        => [],
