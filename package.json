@@ -21,9 +21,10 @@
         "test": "ddev exec 'APP_ENV=test composer test plugins/AivieRecaptchaBundle'",
         "fixcs": "ddev exec composer fixcs plugins/AivieRecaptchaBundle",
         "changelog:preview": "standard-version --dry-run",
-        "release": "gh workflow run 'Release' -r 6.x -f bump=patch -f slack_notify=true",
-        "release:minor": "gh workflow run 'Release' -r 6.x -f bump=minor -f slack_notify=true",
-        "release:major": "gh workflow run 'Release' -r 6.x -f bump=major -f slack_notify=true"
+        "release": "npm run release:patch",
+        "release:patch": "gh workflow run 'Release' -r 7.x -f bump=patch -f post_to_slack=true",
+        "release:minor": "gh workflow run 'Release' -r 7.x -f bump=minor -f post_to_slack=true",
+        "release:major": "gh workflow run 'Release' -r 7.x -f bump=major -f post_to_slack=true"
     },
     "devDependencies": {
         "@commitlint/cli": "^20.1.0",
