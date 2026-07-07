@@ -26,7 +26,7 @@ jobs:
   release:
     runs-on: ubuntu-latest
     env:
-      RELEASE_BRANCH: ${{ vars.RELEASE_BRANCH || github.ref_name }}
+      RELEASE_BRANCH: ${{ vars.RELEASE_BRANCH || 'main' }}
 
     steps:
       - name: Checkout
@@ -34,13 +34,9 @@ jobs:
         with:
           fetch-depth: 0
           ref: ${{ env.RELEASE_BRANCH }}
-          token: ${{ secrets.RELEASE_TOKEN || secrets.GITHUB_TOKEN }}
 
       - name: Sync with origin branch
-        env:
-          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN || secrets.GITHUB_TOKEN }}
         run: |
-          git remote set-url origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
           git fetch origin "${RELEASE_BRANCH}"
           git reset --hard "origin/${RELEASE_BRANCH}"
 
@@ -83,6 +79,7 @@ jobs:
           fi
 
       - name: Capture new version
+        if: always()
         run: echo "NEW_VERSION=$(jq -r .version package.json)" >> "$GITHUB_ENV"
 
       - name: Sync version files
@@ -90,7 +87,29 @@ jobs:
           chmod +x scripts/sync-version-files.js
           ./scripts/sync-version-files.js "$NEW_VERSION"
 
+      - name: Detect release changes
+        id: release_changes
+        run: |
+          if git diff --quiet; then
+            echo "has_changes=false" >> "$GITHUB_OUTPUT"
+            echo "No release changes detected. Skipping release, Google Sheets, and Slack."
+          else
+            echo "has_changes=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Extract release notes
+        if: steps.release_changes.outputs.has_changes == 'true'
+        run: |
+          chmod +x scripts/extract-release-notes.sh
+          ./scripts/extract-release-notes.sh CHANGELOG.md > release_notes.md
+
+      - name: Get release tag
+        id: tag
+        if: steps.release_changes.outputs.has_changes == 'true'
+        run: echo "name=v${NEW_VERSION}" >> "$GITHUB_OUTPUT"
+
       - name: Commit and tag release
+        if: steps.release_changes.outputs.has_changes == 'true'
         run: |
           for file in CHANGELOG.md package.json package-lock.json composer.json Config/config.php; do
             [ -f "$file" ] && git add "$file"
@@ -98,23 +117,12 @@ jobs:
           git commit -m "chore(release): v${NEW_VERSION}"
           git tag -a "v${NEW_VERSION}" -m "v${NEW_VERSION}"
 
-      - name: Extract release notes
-        run: |
-          chmod +x scripts/extract-release-notes.sh
-          ./scripts/extract-release-notes.sh CHANGELOG.md > release_notes.md
-
-      - name: Get release tag
-        id: tag
-        run: echo "name=v${NEW_VERSION}" >> "$GITHUB_OUTPUT"
-
       - name: Push commit and tag
-        env:
-          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN || secrets.GITHUB_TOKEN }}
-        run: |
-          git remote set-url origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
-          git push origin "HEAD:${RELEASE_BRANCH}" "refs/tags/${{ steps.tag.outputs.name }}"
+        if: steps.release_changes.outputs.has_changes == 'true'
+        run: git push origin "HEAD:${RELEASE_BRANCH}" "refs/tags/v${NEW_VERSION}"
 
       - name: Create GitHub Release
+        if: steps.release_changes.outputs.has_changes == 'true'
         uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ steps.tag.outputs.name }}
@@ -123,9 +131,10 @@ jobs:
           generate_release_notes: false
           prerelease: ${{ contains(env.NEW_VERSION, '-') }}
         env:
-          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN || secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Post release to Google Sheets
+        if: steps.release_changes.outputs.has_changes == 'true'
         env:
           SHEETS_WEBHOOK_URL: ${{ vars.SHEETS_WEBHOOK_URL }}
           SHEETS_WEBHOOK_TOKEN: ${{ secrets.SHEETS_WEBHOOK_TOKEN }}
@@ -138,7 +147,7 @@ jobs:
           ./scripts/post-release-to-google-sheets.sh release_notes.md
 
       - name: Post release notes to Slack
-        if: inputs.post_to_slack
+        if: steps.release_changes.outputs.has_changes == 'true' && inputs.post_to_slack
         continue-on-error: true
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
