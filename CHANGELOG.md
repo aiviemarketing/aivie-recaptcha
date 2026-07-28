@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [7.1.0](https://github.com/aiviemarketing/aivie-recaptcha/compare/v7.0.2...v7.1.0) (2026-07-28)
+
+
+### Bug Fixes
+
+* **repo:** support Mautic 7 Composer installs ([6e79146](https://github.com/aiviemarketing/aivie-recaptcha/commit/6e79146cc2da167e5e3c9d075d43f5f545e4de38))
+
 ### [7.0.2](https://github.com/aiviemarketing/aivie-recaptcha/compare/v7.0.1...v7.0.2) (2026-07-07)
 
 ### [7.0.1](https://github.com/aiviemarketing/aivie-recaptcha/compare/v6.0.6...v7.0.1) (2026-07-07)
