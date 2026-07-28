@@ -18,7 +18,7 @@
     "aivie"
   ],
   "require": {
-    "mautic/core-lib": "~6.0",
+    "mautic/core-lib": "^6.0 || ^7.0",
     "google/cloud-recaptcha-enterprise": "^1.17"
   },
   "extra": {
