@@ -1,5 +1,5 @@
 {
-  "name": "aiviemarketing/mautic-recaptcha",
+  "name": "aiviemarketing/plugin-recaptcha",
   "description": "This plugin brings reCAPTCHA integration to Aivie and mautic.",
   "type": "mautic-plugin",
   "license": "GPL-3.0-only",
