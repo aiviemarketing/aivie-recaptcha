@@ -62,15 +62,48 @@ class FormSubscriberTest extends TestCase
         );
     }
 
-    public function testOnFormBuildDoesNotAddFieldWhenNotConfigured(): void
+    public function testOnFormBuildAddsDisabledFieldWhenNotConfigured(): void
+    {
+        $event = $this->createMock(FormBuilderEvent::class);
+
+        $this->config->method('isPublished')->willReturn(true);
+        $this->config->method('isConfigured')->willReturn(false);
+
+        $event->expects($this->once())
+            ->method('addFormField')
+            ->with('plugin.recaptcha', $this->callback(function (array $options): bool {
+                return '@AivieRecaptcha/Field/recaptcha.html.twig' === $options['template']
+                    && false === $options['isEnabled']
+                    && '' === $options['siteKey']
+                    && '' === $options['tagAction'];
+            }));
+
+        $event->expects($this->once())
+            ->method('addValidator')
+            ->with('plugin.recaptcha.validator', $this->isType('array'));
+
+        $this->subscriber->onFormBuild($event);
+    }
+
+    public function testOnFormBuildAddsDisabledFieldWhenNotPublished(): void
     {
         $event = $this->createMock(FormBuilderEvent::class);
 
         $this->config->method('isPublished')->willReturn(false);
-        $this->config->method('isConfigured')->willReturn(false);
+        $this->config->expects($this->never())->method('isConfigured');
 
-        $event->expects($this->never())->method('addFormField');
-        $event->expects($this->never())->method('addValidator');
+        $event->expects($this->once())
+            ->method('addFormField')
+            ->with('plugin.recaptcha', $this->callback(function (array $options): bool {
+                return '@AivieRecaptcha/Field/recaptcha.html.twig' === $options['template']
+                    && false === $options['isEnabled']
+                    && '' === $options['siteKey']
+                    && '' === $options['tagAction'];
+            }));
+
+        $event->expects($this->once())
+            ->method('addValidator')
+            ->with('plugin.recaptcha.validator', $this->isType('array'));
 
         $this->subscriber->onFormBuild($event);
     }
@@ -88,6 +121,8 @@ class FormSubscriberTest extends TestCase
             ->method('addFormField')
             ->with('plugin.recaptcha', $this->callback(function ($options) {
                 return RecaptchaType::class === $options['formType']
+                    && '@AivieRecaptcha/Field/recaptcha.html.twig' === $options['template']
+                    && true === $options['isEnabled']
                     && 'test_site_key' === $options['siteKey']
                     && 'test_tag_action' === $options['tagAction'];
             }));

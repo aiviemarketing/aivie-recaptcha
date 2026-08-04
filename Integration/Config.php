@@ -85,6 +85,15 @@ final class Config implements ConfigInterface
         $projectId = $apiKeys[AivieRecaptchaIntegration::PROJECT_ID_NAME] ?? null;
 
         if (empty($projectId)) {
+            $projectId = getenv('GC_RECAPTCHA_PROJECT_ID') ?: ($_ENV['GC_RECAPTCHA_PROJECT_ID'] ?? null);
+        }
+
+        if (empty($projectId)) {
+            $projectId = getenv('PROJECT') ?: ($_ENV['PROJECT'] ?? null);
+        }
+
+        // @deprecated: The following is a fallback for legacy environments that used GOOGLE_CLOUD_PROJECT instead of GC_RECAPTCHA_PROJECT_ID.
+        if (empty($projectId)) {
             $projectId = getenv('GOOGLE_CLOUD_PROJECT') ?: ($_ENV['GOOGLE_CLOUD_PROJECT'] ?? null);
         }
 

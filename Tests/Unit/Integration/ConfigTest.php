@@ -43,6 +43,10 @@ class ConfigTest extends TestCase
         // Clear both getenv and $_ENV to avoid test contamination
         putenv('GC_RECAPTCHA_SITE_KEY'); // unsets
         unset($_ENV['GC_RECAPTCHA_SITE_KEY']);
+        putenv('GC_RECAPTCHA_PROJECT_ID'); // unsets
+        unset($_ENV['GC_RECAPTCHA_PROJECT_ID']);
+        putenv('PROJECT'); // unsets
+        unset($_ENV['PROJECT']);
         putenv('GOOGLE_CLOUD_PROJECT'); // unsets
         unset($_ENV['GOOGLE_CLOUD_PROJECT']);
 
@@ -55,6 +59,8 @@ class ConfigTest extends TestCase
 
         // Remove the environment variable.
         putenv('GC_RECAPTCHA_SITE_KEY');
+        putenv('GC_RECAPTCHA_PROJECT_ID');
+        putenv('PROJECT');
         putenv('GOOGLE_CLOUD_PROJECT');
     }
 
@@ -93,7 +99,7 @@ class ConfigTest extends TestCase
     {
         // Simulate environment variable
         putenv('GC_RECAPTCHA_SITE_KEY=test_site_key');
-        putenv('GOOGLE_CLOUD_PROJECT=test_project');
+        putenv('GC_RECAPTCHA_PROJECT_ID=test_project');
 
         $this->assertTrue($this->config->isConfigured());
     }
@@ -102,6 +108,8 @@ class ConfigTest extends TestCase
     {
         // Remove the env variable
         putenv('GC_RECAPTCHA_SITE_KEY');
+        putenv('GC_RECAPTCHA_PROJECT_ID');
+        putenv('PROJECT');
         putenv('GOOGLE_CLOUD_PROJECT');
 
         // Expect error logging
@@ -125,7 +133,21 @@ class ConfigTest extends TestCase
         $this->assertSame('', $this->config->getSiteKey());
     }
 
-    public function testGetProjectReturnsCorrectValue(): void
+    public function testGetProjectReturnsCorrectValueFromRecaptchaEnvironment(): void
+    {
+        putenv('GC_RECAPTCHA_PROJECT_ID=test_recaptcha_project');
+
+        $this->assertSame('test_recaptcha_project', $this->config->getProjectId());
+    }
+
+    public function testGetProjectReturnsCorrectValueFromProjectEnvironment(): void
+    {
+        putenv('PROJECT=test_project');
+
+        $this->assertSame('test_project', $this->config->getProjectId());
+    }
+
+    public function testGetProjectReturnsCorrectValueFromLegacyEnvironment(): void
     {
         putenv('GOOGLE_CLOUD_PROJECT=test_project');
         $this->assertSame('test_project', $this->config->getProjectId());
@@ -133,8 +155,26 @@ class ConfigTest extends TestCase
 
     public function testGetProjectReturnsEmptyWhenNotSet(): void
     {
+        putenv('GC_RECAPTCHA_PROJECT_ID');
+        putenv('PROJECT');
         putenv('GOOGLE_CLOUD_PROJECT');
         $this->assertSame('', $this->config->getProjectId());
+    }
+
+    public function testRecaptchaProjectEnvironmentTakesPrecedenceOverProjectEnvironment(): void
+    {
+        putenv('GC_RECAPTCHA_PROJECT_ID=recaptcha_project');
+        putenv('PROJECT=infrastructure_project');
+
+        $this->assertSame('recaptcha_project', $this->config->getProjectId());
+    }
+
+    public function testProjectEnvironmentTakesPrecedenceOverLegacyEnvironment(): void
+    {
+        putenv('PROJECT=infrastructure_project');
+        putenv('GOOGLE_CLOUD_PROJECT=legacy_project');
+
+        $this->assertSame('infrastructure_project', $this->config->getProjectId());
     }
 
     public function testApiKeysOverrideEnv(): void
@@ -147,6 +187,8 @@ class ConfigTest extends TestCase
             ]);
 
         putenv('GC_RECAPTCHA_SITE_KEY=env_site_key');
+        putenv('GC_RECAPTCHA_PROJECT_ID=env_recaptcha_project');
+        putenv('PROJECT=env_infrastructure_project');
         putenv('GOOGLE_CLOUD_PROJECT=env_project');
 
         $this->assertSame('ui_site_key', $this->config->getSiteKey());

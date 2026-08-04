@@ -23,9 +23,11 @@ Execute `composer require google/cloud-recaptcha-enterprise` in the main directo
 Navigate to the Plugins page and click "Install/Upgrade Plugins". You should now see a "reCAPTCHA" plugin. Open it to enable it.
 
 Set the following ENV variables on your server:
-- GOOGLE_CLOUD_PROJECT
 - GC_RECAPTCHA_SITE_KEY
+- GC_RECAPTCHA_PROJECT_ID
 - GOOGLE_APPLICATION_CREDENTIALS
+
+`GC_RECAPTCHA_PROJECT_ID` is the Google Cloud project that owns the reCAPTCHA Enterprise site key. If it is not set, the plugin falls back to `PROJECT`, then the legacy `GOOGLE_CLOUD_PROJECT` (deprecated) variable.
 
 The plugin relies on [Google reCAPTCHA Enterprise](https://cloud.google.com/recaptcha). For it to work it needs [Google Application Default Credentials](https://cloud.google.com/docs/authentication/application-default-credentials#GAC). 
 

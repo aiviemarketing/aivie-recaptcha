@@ -50,9 +50,8 @@ class FormSubscriber implements EventSubscriberInterface
      */
     public function onFormBuild(FormBuilderEvent $event): void
     {
-        if (!$this->config->isPublished() || !$this->config->isConfigured()) {
-            return;
-        }
+        $isPublished  = $this->config->isPublished();
+        $isConfigured = $isPublished && $this->config->isConfigured();
 
         $event->addFormField('plugin.recaptcha', [
             'label'          => 'mautic.plugin.actions.recaptcha',
@@ -64,8 +63,9 @@ class FormSubscriber implements EventSubscriberInterface
                 'addDefaultValue'  => false,
                 'addSaveResult'    => true,
             ],
-            'siteKey'  => $this->config->getSiteKey(),
-            'tagAction'=> $this->recaptchaClient->getTagActionName(),
+            'isEnabled' => $isConfigured,
+            'siteKey'   => $isConfigured ? $this->config->getSiteKey() : '',
+            'tagAction' => $isConfigured ? $this->recaptchaClient->getTagActionName() : '',
         ]);
 
         $event->addValidator('plugin.recaptcha.validator', [
