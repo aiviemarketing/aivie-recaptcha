@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [7.2.0](https://github.com/aiviemarketing/aivie-recaptcha/compare/v7.1.0...v7.2.0) (2026-08-13)
+
+
+### Features
+
+* **repo:** do not throw an exception when project env config is wrong, accept multiple more clear project values ([7e01a36](https://github.com/aiviemarketing/aivie-recaptcha/commit/7e01a36c97e6bbda7cdcefbd44b34e65c783a851))
+
 ## [7.1.0](https://github.com/aiviemarketing/aivie-recaptcha/compare/v7.0.2...v7.1.0) (2026-07-28)
 
 
