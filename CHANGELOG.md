@@ -1,6 +1,10 @@
 # Changelog
 
 
+### [7.2.1](https://github.com/aiviemarketing/aivie-recaptcha/compare/v7.2.0...v7.2.1) (2026-08-13)
+
+### [7.1.1](https://github.com/aiviemarketing/aivie-recaptcha/compare/v7.1.0...v7.1.1) (2026-07-29)
+
 ## [7.2.0](https://github.com/aiviemarketing/aivie-recaptcha/compare/v7.1.0...v7.2.0) (2026-08-13)
 
 
