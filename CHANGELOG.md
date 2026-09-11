@@ -1,6 +1,14 @@
 # Changelog
 
 
+### [7.2.3](https://github.com/aiviemarketing/aivie-recaptcha/compare/v7.2.2...v7.2.3) (2026-09-11)
+
+
+### Continuous Integration
+
+* **repo:** detect release-worthy commits instead of raw file diff ([d0e4d2d](https://github.com/aiviemarketing/aivie-recaptcha/commit/d0e4d2d092a9938c91fa965b0c8da7c8bd4bf2f2))
+* **repo:** widen release-worthy types and unhide their changelog sections ([0610172](https://github.com/aiviemarketing/aivie-recaptcha/commit/06101728addc5e516a2ba626b031775fd9d9083e))
+
 ### [7.2.2](https://github.com/aiviemarketing/aivie-recaptcha/compare/v7.2.1...v7.2.2) (2026-08-14)
 
 ### [7.2.1](https://github.com/aiviemarketing/aivie-recaptcha/compare/v7.2.0...v7.2.1) (2026-08-13)
